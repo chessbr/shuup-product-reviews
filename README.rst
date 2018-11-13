@@ -7,6 +7,14 @@ Shuup is an Open Source E-Commerce Platform based on Django and Python.
 
 https://shuup.com/
 
+Review Flow
+-----------
+1. Order products
+2. Create shipment, payment and mark order completed
+3. Wait customer to create review.
+4. Once review is received, go to admin and approve/reject reviews.
+5. Setup review plugin to product detail. One for reviews summary and one for comments. Use placeholder that is shown to all products to avoid setting plugins to all products individually.
+
 Copyright
 ---------
 

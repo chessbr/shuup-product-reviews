@@ -10,7 +10,7 @@ from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.urlresolvers import reverse
 from django.db.transaction import atomic
-from django.http.response import JsonResponse
+from django.http.response import HttpResponseRedirect, JsonResponse
 from django.views.generic import TemplateView, View
 
 from shuup.core.models import Product
@@ -23,7 +23,12 @@ from shuup_product_reviews.utils import (
 
 class ProductReviewForm(forms.Form):
     product = forms.ModelChoiceField(queryset=Product.objects.all(), widget=forms.HiddenInput())
-    rating = forms.IntegerField(widget=forms.NumberInput(attrs={"class": "rating-input"}), required=False)
+    rating = forms.IntegerField(
+        widget=forms.NumberInput(attrs={"class": "rating-input"}),
+        max_value=5,
+        min_value=1,
+        required=False
+    )
     comment = forms.CharField(required=False, widget=forms.Textarea(attrs=dict(rows=2)))
     would_recommend = forms.BooleanField(required=False)
 
@@ -74,7 +79,7 @@ class ProductReviewsView(DashboardViewMixin, TemplateView):
                 for form in formset.forms:
                     form.save()
 
-        return self.get(request)
+        return HttpResponseRedirect(reverse("shuup:product_reviews"))
 
 
 class ProductReviewCommentsView(View):

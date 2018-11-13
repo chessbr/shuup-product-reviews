@@ -90,6 +90,9 @@ def test_reviews_view(rf):
     request.shop = shop
 
     response = client.post(reverse("shuup:product_reviews"), data=form_data)
+    assert response.status_code == 302
+
+    response = client.get(reverse("shuup:product_reviews"))
     assert response.status_code == 200
     response.render()
     content = response.content.decode("utf-8")
