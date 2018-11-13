@@ -1,0 +1,36 @@
+{% macro render_reviews_table(reviews) %}
+<table class="table table-bordered table-striped customer-reviews-table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>{{ _("Product") }}</th>
+            <th>{{ _("Rating") }}</th>
+            <th>{{ _("Comment") }}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for review in reviews %}
+        <tr>
+            <td>
+            {% if review.product.primary_image %}
+                <img src="{{ review.product.primary_image|thumbnail(size=(50, 50)) }}" />
+            {% elif review.product.variation_parent and review.product.variation_parent.primary_image %}
+                <img src="{{ review.product.variation_parent.primary_image|thumbnail(size=(50, 50)) }}" />
+            {% endif %}
+            </td>
+            <td>
+                <a href="{{ url('shuup:product', pk=review.product.pk, slug=review.product.slug) }}">
+                    {{ review.product.name }}
+                </a>
+            </td>
+            <td>
+                {% for index in range(review.rating) %}
+                    <i class="fa fa-star rating-star"></i>
+                {% endfor %}
+            </td>
+            <td>{{ review.comment or "" }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endmacro %}

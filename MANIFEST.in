@@ -1,0 +1,4 @@
+include README.rst
+
+recursive-include shuup_product_reviews \
+    *.mo *.po *.jinja *.js *.css *.png

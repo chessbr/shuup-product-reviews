@@ -1,0 +1,145 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-11-16 12:27+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Product Reviews"
+msgstr ""
+
+msgid "Approve reviews"
+msgstr ""
+
+msgid "Reject reviews"
+msgstr ""
+
+msgid "Product"
+msgstr ""
+
+msgid "Filter by product..."
+msgstr ""
+
+msgid "Reviewer"
+msgstr ""
+
+msgid "Rating"
+msgstr ""
+
+msgid "Comment"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Reviews"
+msgstr ""
+
+msgid "Show all"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Approved"
+msgstr ""
+
+msgid "Rejected"
+msgstr ""
+
+msgid "shop"
+msgstr ""
+
+msgid "product"
+msgstr ""
+
+msgid "reviewer"
+msgstr ""
+
+msgid "order"
+msgstr ""
+
+msgid "rating"
+msgstr ""
+
+msgid "comment"
+msgstr ""
+
+msgid "Would recommend to a friend?"
+msgstr ""
+
+msgid "Indicates whether you would recommend this product to a friend."
+msgstr ""
+
+#, python-brace-format
+msgid "Review for {product} by {reviewer_name}"
+msgstr ""
+
+msgid "review count"
+msgstr ""
+
+msgid "users would recommend"
+msgstr ""
+
+msgid "Product Review Rating"
+msgstr ""
+
+msgid "Customer ratings title"
+msgstr ""
+
+msgid "Customer Ratings:"
+msgstr ""
+
+msgid "Show number of customers that recommend the product"
+msgstr ""
+
+msgid "Whether to show number of customers that recommend the product."
+msgstr ""
+
+msgid "Product Review Comments"
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "Last reviews"
+msgstr ""
+
+msgid "You haven't made any reviews yet."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"<strong>{recommend_count} of {reviews_count} ({recommend_count_percent})</"
+"strong> reviewers would recommend this product to a friend."
+msgstr ""
+
+msgid "Home"
+msgstr ""
+
+msgid "Dashboard"
+msgstr ""
+
+msgid "Products to Review"
+msgstr ""
+
+msgid "Would you recommend this product to a friend?"
+msgstr ""
+
+msgid "Send Review"
+msgstr ""
+
+msgid "No products to review."
+msgstr ""

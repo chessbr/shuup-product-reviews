@@ -1,0 +1,21 @@
+sudo: false
+language: python
+cache:
+  directories:
+    - "$HOME/.cache/pip"
+    - "$HOME/.cache/shuup/"
+    - "$HOME/.nvm"
+env:
+  - DEBUG=1
+python:
+  - "3.6"
+install:
+  - pip install -U pip
+  - pip install codecov
+  - pip install -r requirements-test.txt
+script:
+  - flake8
+  - isort --check-only
+  - py.test -ra -vvv --nomigrations --cov shuup_product_reviews shuup_product_reviews_tests/
+after_success:
+  - codecov
