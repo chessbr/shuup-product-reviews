@@ -1,0 +1,36 @@
+{% if product_rating %}
+<style>
+.product-reviews-start-rating .customer-rating-label h3 {
+    font-weight: bold;
+}
+.product-reviews-start-rating .rating {
+    font-weight: bold;
+    margin: 0 5px;
+}
+.product-reviews-start-rating .stars .star-rating-full,
+.product-reviews-start-rating .stars .star-rating-half,
+.product-reviews-start-rating .stars .star-rating-empty {
+    color: #fe8f2e;
+}
+</style>
+<div class="product-reviews-start-rating">
+    {% if show_customer_rating_label %}
+    <div class="customer-rating-label">
+        <h3>{{ _("Customer Ratings:") }}</h3>
+    </div>
+    {% endif %}
+    <span class="stars">
+        {% for full_star in range(full_stars) %}
+            <i class="fa fa-star star-rating-full"></i>
+        {% endfor %}
+        {% if half_star %}
+            <i class="fa fa-star-half-o star-rating-half"></i>
+        {% endif %}
+        {% for empty_star in range(empty_stars) %}
+            <i class="fa fa-star-o star-rating-empty"></i>
+        {% endfor %}
+    </span>
+    <span class="rating">{{ product_rating.rating }}</span>
+    <span class="count">{{ _("{reviews_count} Reviews").format(reviews_count=product_rating.review_count) }}</span>
+</div>
+{% endif %}

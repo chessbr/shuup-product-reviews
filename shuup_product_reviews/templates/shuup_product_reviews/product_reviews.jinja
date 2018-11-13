@@ -1,0 +1,97 @@
+{% extends "shuup/front/dashboard/dashboard.jinja" %}
+{% block title -%}{{ _("Reviews") }}{%- endblock %}
+
+{% block breadcrumb %}
+    {% call macros.breadcrumb() %}
+        {{ macros.render_breadcrumb_item("/", _("Home")) }}
+        {{ macros.render_breadcrumb_item(url("shuup:dashboard"), _("Dashboard")) }}
+        {{ macros.render_breadcrumb_item(None, _("Reviews"), True) }}
+    {% endcall %}
+{% endblock %}
+
+{% block dashboard_content %}
+    {% set has_reviews = reviews.exists() %}
+    <h1>{{ _("Reviews") }}</h1>
+    {% if reviews_formset %}
+        <form method="POST">
+        {{ reviews_formset.management_form }}
+        {% csrf_token %}
+        <h3>{{ _("Products to Review") }}</h3>
+        <table class="table table-bordered table-stipped customer-pending-reviews-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>{{ _("Product") }}</th>
+                    <th>{{ _("Rating") }}</th>
+                    <th>{{ _("Comment") }}</th>
+                    <th>{{ _("Would you recommend to a friend?") }}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for review_form in reviews_formset %}
+                <tr>
+                    <td class="product-image">
+                        {% if review_form.initial.product.primary_image %}
+                        <img src="{{ review_form.initial.product.primary_image.url }}" />
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ review_form.product }}
+                        {{ review_form.initial.product.name }}
+                    </td>
+                    <td>
+                        {{ review_form.rating }}
+                    </td>
+                    <td>{{ review_form.comment }}</td>
+                    <td>{{ review_form.would_recommend }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">{{ _("Send Review") }}</button>
+        </div>
+        </form>
+    {% endif %}
+
+    {% if has_reviews %}
+        <table class="table table-bordered table-stipped customer-reviews-table">
+            <caption>{{ _("Reviews") }}</caption>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>{{ _("Product") }}</th>
+                    <th>{{ _("Rating") }}</th>
+                    <th>{{ _("Comment") }}</th>
+                    <th>{{ _("Status") }}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for review in reviews %}
+                <tr>
+                    <td>
+                        {% if review.product.primary_image %}
+                        <img style="width: 50px; height: 50px;" src="{{ review.product.primary_image.url }}" />
+                        {% endif %}
+                    </td>
+                    <td>{{ review.product.name }}</td>
+                    <td>
+                        <i class="fa fa-star-o text-warning"></i>
+                        <i class="fa fa-star-o text-warning"></i>
+                        <i class="fa fa-star-o text-warning"></i>
+                    </td>
+                    <td>{{ review.comment or "" }}</td>
+                    <td>{{ review.status }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if not reviews_formset and not has_reviews %}
+        <p>{{ _("No products to review.") }}</p>
+    {% endif %}
+{% endblock %}
+
+{% block extrajs %}
+<script src="{{ static('shuup_product_reviews/shuup_product_reviews.js') }}"></script>
+{% endblock %}
