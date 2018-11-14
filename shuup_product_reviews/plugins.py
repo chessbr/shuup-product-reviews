@@ -9,11 +9,11 @@ from __future__ import unicode_literals
 
 import math
 
-from django.db.models import Avg, Count, Sum
 from django import forms
+from django.db.models import Avg, Sum
 from django.utils.translation import ugettext_lazy as _
-from shuup.core.models import ProductMode
 
+from shuup.core.models import ProductMode
 from shuup.xtheme import TemplatedPlugin
 from shuup_product_reviews.models import ProductReviewAggregation
 

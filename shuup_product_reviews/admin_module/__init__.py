@@ -12,7 +12,9 @@ from django.utils.translation import ugettext_lazy as _
 from shuup.admin.base import AdminModule, MenuEntry
 from shuup.admin.menu import PRODUCTS_MENU_CATEGORY
 from shuup.admin.utils.permissions import get_default_model_permissions
-from shuup.admin.utils.urls import derive_model_url, get_edit_and_list_urls, admin_url
+from shuup.admin.utils.urls import (
+    admin_url, derive_model_url, get_edit_and_list_urls
+)
 from shuup_product_reviews.models import ProductReview
 
 
@@ -27,7 +29,7 @@ class ProductReviewsModule(AdminModule):
             name_template="product_reviews.%s"
         ) + [
             admin_url(
-                "^product_reviews/(?P<pk>\d+)/set-status/$",
+                r"^product_reviews/(?P<pk>\d+)/set-status/$",
                 "shuup_product_reviews.admin_module.views.ProductReviewSetStatusView",
                 name="product_reviews.set_status",
                 permissions=get_default_model_permissions(ProductReview)

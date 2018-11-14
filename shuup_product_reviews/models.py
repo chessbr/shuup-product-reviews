@@ -7,13 +7,10 @@
 # LICENSE file in the root directory of this source tree.
 from django.core.validators import MaxValueValidator
 from django.db import models
-from django.db.models import Avg, Count, QuerySet, Case, When, Value, Sum
+from django.db.models import Avg, Case, Count, QuerySet, Sum, Value, When
 from django.db.models.signals import post_delete, post_save
-from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy as _
 from enumfields import Enum, EnumIntegerField
-
-from shuup.core.fields import LanguageField
 
 
 class ReviewStatus(Enum):

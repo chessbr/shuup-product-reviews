@@ -8,7 +8,6 @@
 from __future__ import unicode_literals
 
 from django import forms
-from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http.response import HttpResponseRedirect
@@ -17,7 +16,7 @@ from django.views.generic.detail import BaseDetailView
 
 from shuup.admin.shop_provider import get_shop
 from shuup.admin.toolbar import PostActionButton, Toolbar
-from shuup.admin.utils.picotable import Column, TextFilter, ChoicesFilter
+from shuup.admin.utils.picotable import ChoicesFilter, Column, TextFilter
 from shuup.admin.utils.views import CreateOrUpdateView, PicotableListView
 from shuup.core.models import Contact, Order, Product
 from shuup_product_reviews.models import ProductReview, ReviewStatus
@@ -151,7 +150,7 @@ class ProductReviewSetStatusView(BaseDetailView):
             messages.error(request, _("Invalid status"))
             return self.get(request, *args, **kwargs)
 
-        if not new_status in [choice[0] for choice in ReviewStatus.choices()]:
+        if new_status not in [choice[0] for choice in ReviewStatus.choices()]:
             messages.error(request, _("Invalid status"))
             return self.get(request, *args, **kwargs)
 
