@@ -11,14 +11,13 @@
 {% block content %}
     {% call single_section_form("product_review_form", form) %}
         {% if form.instance.pk %}
-            {{ render_info(_("Reviewer"), form.instance.reviewer) }}
+            {{ render_info(_("Reviewer"), form.instance.reviewer.name) }}
             {{ render_info(_("Product"), form.instance.product) }}
-            {{ render_info(_("Order"), form.instance.order) }}
+            {{ render_info(_("Order"), form.instance.order.pk) }}
             {{ render_info(_("Rating"), form.instance.rating) }}
             {{ render_info(_("Would recommend?"), form.instance.would_recommend) }}
             {{ render_info(_("Comment"), form.instance.comment) }}
-            {{ render_info(_("Language"), form.instance.language) }}
-            {{ bs3.field(form.status) }}
+            {{ render_info(_("Status"), form.instance.status) }}
         {% else %}
             {% for field in form %}
                 {{ bs3.field(field) }}

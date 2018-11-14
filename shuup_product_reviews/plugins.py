@@ -9,8 +9,10 @@ from __future__ import unicode_literals
 
 import math
 
+from django.db.models import Avg, Count, Sum
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from shuup.core.models import ProductMode
 
 from shuup.xtheme import TemplatedPlugin
 from shuup_product_reviews.models import ProductReviewAggregation
@@ -20,7 +22,6 @@ class ProductReviewStarRatingsPlugin(TemplatedPlugin):
     identifier = "shuup_product_reviews.star_rating"
     name = _("Product Reviews Star Rating")
     template_name = "shuup_product_reviews/plugins/star_rating.jinja"
-    required_context_variables = ["shop_product"]
 
     fields = [
         ("show_customer_rating_label", forms.BooleanField(
@@ -29,23 +30,46 @@ class ProductReviewStarRatingsPlugin(TemplatedPlugin):
         ))
     ]
 
+    def is_context_valid(self, context):
+        return bool(context.get("shop_product") or context.get("product"))
+
     def get_context_data(self, context):
-        context = super(ProductReviewStarRatingsPlugin, self).get_context_data(context)
+        context = dict(context)
+        product = None
 
         if context.get("shop_product"):
-            product_rating = ProductReviewAggregation.objects.filter(
-                product_id=context["shop_product"].product_id
-            ).first()
+            product = context["shop_product"].product
+        elif context.get("product"):
+            product = context["product"]
 
-            if product_rating:
-                full_stars = math.floor(product_rating.rating)
-                empty_stars = math.floor(5 - product_rating.rating)
+        modes = [
+            ProductMode.NORMAL,
+            ProductMode.SIMPLE_VARIATION_PARENT,
+            ProductMode.VARIABLE_VARIATION_PARENT,
+            ProductMode.VARIATION_CHILD
+        ]
+        if product and product.mode in modes:
+            product_ids = [product.pk] + list(product.variation_children.values_list("pk", flat=True))
+            product_rating = ProductReviewAggregation.objects.filter(product_id__in=product_ids).aggregate(
+                rating=Avg("rating"),
+                reviews=Sum("review_count"),
+                would_recommend=Sum("would_recommend")
+            )
+
+            if product_rating["reviews"]:
+                rating = product_rating["rating"]
+                reviews = product_rating["reviews"]
+
+                full_stars = math.floor(rating)
+                empty_stars = math.floor(5 - rating)
                 half_star = (full_stars + empty_stars) < 5
                 context.update({
                     "half_star": half_star,
                     "full_stars": int(full_stars),
                     "empty_stars": int(empty_stars),
-                    "product_rating": product_rating,
+                    "reviews": reviews,
+                    "rating": rating,
+                    "would_recommend": product_rating["would_recommend"] / reviews,
                     "show_customer_rating_label": self.config.get("show_customer_rating_label", False)
                 })
 

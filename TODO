@@ -6,4 +6,4 @@ from shuup_product_reviews.models import *
 p = Product.objects.get(pk=12)
 pc = PersonContact.objects.get(pk=1)
 o = Order.objects.filter(customer=pc).last()
-ProductReview.objects.create(shop_id=2, reviewer=pc, product=p, rating=4, language="en", status=2, order=o)
+ProductReview.objects.create(shop_id=2, reviewer=pc, product=p, rating=4, status=2, order=o)

@@ -1,3 +1,36 @@
+$star-color: #fe8f2e;
+
+.product-reviews-start-rating {
+    .customer-rating-label h3 {
+        font-weight: bold;
+    }
+    .rating {
+        font-weight: bold;
+        margin: 0 5px;
+    }
+    .recommend {
+        margin: 0 5px;
+    }
+    .stars .star-rating-full,
+    .stars .star-rating-half,
+    .stars .star-rating-empty {
+        color: $star-color;
+    }
+}
+
+table.customer-pending-reviews-table,
+table.customer-reviews-table {
+    thead tr th,
+    tbody tr td {
+        vertical-align: middle;
+        text-align: center;
+
+        .rating-star {
+            color: $star-color;
+        }
+    }
+}
+
 table.customer-pending-reviews-table {
     td.product-image {
         text-align: center;
@@ -6,6 +39,19 @@ table.customer-pending-reviews-table {
             width: 3em;
             height: auto;
             max-height: 3em;
+        }
+    }
+}
+
+.star-rating-input {
+    .stars {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+
+        .star {
+            padding: 0 2px;
+            color: $star-color;
         }
     }
 }

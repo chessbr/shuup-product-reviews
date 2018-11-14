@@ -1,18 +1,4 @@
-{% if product_rating %}
-<style>
-.product-reviews-start-rating .customer-rating-label h3 {
-    font-weight: bold;
-}
-.product-reviews-start-rating .rating {
-    font-weight: bold;
-    margin: 0 5px;
-}
-.product-reviews-start-rating .stars .star-rating-full,
-.product-reviews-start-rating .stars .star-rating-half,
-.product-reviews-start-rating .stars .star-rating-empty {
-    color: #fe8f2e;
-}
-</style>
+{% if reviews %}
 <div class="product-reviews-start-rating">
     {% if show_customer_rating_label %}
     <div class="customer-rating-label">
@@ -30,7 +16,16 @@
             <i class="fa fa-star-o star-rating-empty"></i>
         {% endfor %}
     </span>
-    <span class="rating">{{ product_rating.rating }}</span>
-    <span class="count">{{ _("{reviews_count} Reviews").format(reviews_count=product_rating.review_count) }}</span>
+    <span class="rating">{{ rating }}</span>
+    <span class="count">
+        {%- trans reviews_count=reviews -%}
+            {{ reviews_count }} review
+        {%- pluralize -%}
+            {{ reviews_count }} reviews
+        {%- endtrans -%}
+    </span>
+    <span class="recommend">
+        ({{ _("{recommend_count} recommend this product").format(recommend_count=would_recommend|percent) }})
+    </span>
 </div>
 {% endif %}

@@ -7,7 +7,7 @@
 # LICENSE file in the root directory of this source tree.
 from django.core.validators import MaxValueValidator
 from django.db import models
-from django.db.models import Avg, Count, QuerySet
+from django.db.models import Avg, Count, QuerySet, Case, When, Value, Sum
 from django.db.models.signals import post_delete, post_save
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy as _
@@ -50,7 +50,6 @@ class ProductReview(models.Model):
         verbose_name=_("Would recommend to a friend?"),
         help_text=_("Indicates whether you would recommend this product to a friend.")
     )
-    language = LanguageField(verbose_name="language")
     status = EnumIntegerField(ReviewStatus, db_index=True, default=ReviewStatus.PENDING)
     created_on = models.DateTimeField(auto_now_add=True, db_index=True)
     modified_on = models.DateTimeField(auto_now=True)
@@ -61,7 +60,10 @@ class ProductReview(models.Model):
         unique_together = ("reviewer", "product")
 
     def __str__(self):
-        return "%s - %s" % (self.reviewer, self.rating)
+        return _("Review for {product} by {reviewer_name}").format(
+            product=self.product,
+            reviewer_name=self.reviewer.name
+        )
 
     def approve(self):
         self.status = ReviewStatus.APPROVED
@@ -80,6 +82,7 @@ class ProductReviewAggregation(models.Model):
     )
     rating = models.DecimalField(max_digits=2, decimal_places=1, verbose_name=_("rating"), default=0)
     review_count = models.PositiveIntegerField(verbose_name=_("review count"), default=0)
+    would_recommend = models.PositiveIntegerField(verbose_name=_("users would recommend"), default=0)
 
 
 def recalculate_aggregation(product):
@@ -89,11 +92,20 @@ def recalculate_aggregation(product):
 
     reviews_agg = ProductReview.objects.filter(product=product, status=ReviewStatus.APPROVED).aggregate(
         count=Count("pk"),
-        rating=Avg("rating")
+        rating=Avg("rating"),
+        would_recommend=Sum(
+            Case(
+                When(would_recommend=True, then=Value(1)),
+                When(would_recommend=False, then=Value(0)),
+                default=Value(0),
+                output_field=models.PositiveIntegerField()
+            )
+        )
     )
     ProductReviewAggregation.objects.update_or_create(product=product, defaults=dict(
         review_count=reviews_agg["count"],
-        rating=reviews_agg["rating"]
+        rating=reviews_agg["rating"],
+        would_recommend=reviews_agg["would_recommend"]
     ))
 
 

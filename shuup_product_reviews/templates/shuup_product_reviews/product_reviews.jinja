@@ -17,33 +17,35 @@
         {{ reviews_formset.management_form }}
         {% csrf_token %}
         <h3>{{ _("Products to Review") }}</h3>
-        <table class="table table-bordered table-stipped customer-pending-reviews-table">
+        <table class="table table-bordered table-striped customer-pending-reviews-table">
             <thead>
                 <tr>
-                    <th></th>
-                    <th>{{ _("Product") }}</th>
-                    <th>{{ _("Rating") }}</th>
-                    <th>{{ _("Comment") }}</th>
-                    <th>{{ _("Would you recommend to a friend?") }}</th>
+                    <th colspan="2" class="col-xs-4">{{ _("Product") }}</th>
+                    <th class="col-xs-3">{{ _("Rating") }}</th>
+                    <th class="col-xs-3">{{ _("Comment") }}</th>
+                    <th class="col-xs-2">{{ _("Would you recommend this product to a friend?") }}</th>
                 </tr>
             </thead>
             <tbody>
             {% for review_form in reviews_formset %}
                 <tr>
-                    <td class="product-image">
-                        {% if review_form.initial.product.primary_image %}
-                        <img src="{{ review_form.initial.product.primary_image.url }}" />
-                        {% endif %}
+                    <td class="col-xs-1 product-image">
+                    {% set product = review_form.initial.product %}
+                    {% if product.primary_image %}
+                        <img src="{{ product.primary_image|thumbnail(size=(50, 50)) }}" />
+                    {% elif product.variation_parent and product.variation_parent.primary_image %}
+                        <img src="{{ product.variation_parent.primary_image|thumbnail(size=(50, 50)) }}" />
+                    {% endif %}
                     </td>
-                    <td>
+                    <td class="col-xs-3">
                         {{ review_form.product }}
                         {{ review_form.initial.product.name }}
                     </td>
-                    <td>
+                    <td class="col-xs-3">
                         {{ review_form.rating }}
                     </td>
-                    <td>{{ review_form.comment }}</td>
-                    <td>{{ review_form.would_recommend }}</td>
+                    <td class="col-xs-3">{{ review_form.comment }}</td>
+                    <td class="col-xs-2">{{ review_form.would_recommend }}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -55,33 +57,33 @@
     {% endif %}
 
     {% if has_reviews %}
-        <table class="table table-bordered table-stipped customer-reviews-table">
-            <caption>{{ _("Reviews") }}</caption>
+        <h3>{{ _("Reviews") }}</h3>
+        <table class="table table-bordered table-striped customer-reviews-table">
             <thead>
                 <tr>
                     <th></th>
                     <th>{{ _("Product") }}</th>
                     <th>{{ _("Rating") }}</th>
                     <th>{{ _("Comment") }}</th>
-                    <th>{{ _("Status") }}</th>
                 </tr>
             </thead>
             <tbody>
             {% for review in reviews %}
                 <tr>
                     <td>
-                        {% if review.product.primary_image %}
+                    {% if review.product.primary_image %}
                         <img style="width: 50px; height: 50px;" src="{{ review.product.primary_image.url }}" />
-                        {% endif %}
+                    {% elif review.product.variation_parent and review.product.variation_parent.primary_image %}
+                        <img src="{{ review.product.variation_parent.primary_image|thumbnail(size=(50, 50)) }}" />
+                    {% endif %}
                     </td>
                     <td>{{ review.product.name }}</td>
                     <td>
-                        <i class="fa fa-star-o text-warning"></i>
-                        <i class="fa fa-star-o text-warning"></i>
-                        <i class="fa fa-star-o text-warning"></i>
+                        {% for index in range(review.rating) %}
+                            <i class="fa fa-star rating-star"></i>
+                        {% endfor %}
                     </td>
                     <td>{{ review.comment or "" }}</td>
-                    <td>{{ review.status }}</td>
                 </tr>
             {% endfor %}
             </tbody>
