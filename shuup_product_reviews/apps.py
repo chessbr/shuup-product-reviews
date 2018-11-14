@@ -17,7 +17,8 @@ class AppConfig(shuup.apps.AppConfig):
             "shuup_product_reviews.admin_module.ProductReviewsModule"
         ],
         "xtheme_plugin": [
-            "shuup_product_reviews.plugins.ProductReviewStarRatingsPlugin"
+            "shuup_product_reviews.plugins.ProductReviewStarRatingsPlugin",
+            "shuup_product_reviews.plugins.ProductReviewCommentsPlugin"
         ],
         "customer_dashboard_items": [
             "shuup_product_reviews.dashboard_items:ProductReviewDashboardItem"

@@ -7,11 +7,14 @@
 # LICENSE file in the root directory of this source tree.
 from django import forms
 from django.db.transaction import atomic
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 
 from shuup.core.models import Order, Product, ProductMode
 from shuup.front.views.dashboard import DashboardViewMixin
 from shuup_product_reviews.models import ProductReview
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.http.response import JsonResponse
+
 
 
 class ProductReviewForm(forms.Form):
@@ -83,3 +86,41 @@ class ProductReviewsView(DashboardViewMixin, TemplateView):
                     form.save()
 
         return self.get(request)
+
+
+class ProductReviewCommentsView(View):
+    def get(self, request, *args, **kwargs):
+        paginator, page = self.get_reviews_page()
+        reviews = [
+            {
+                "date": review.created_on.isoformat(),
+                "rating": review.rating,
+                "comment": review.comment,
+                "reviwer": review.reviewer.name,
+            }
+            for review in page.object_list
+        ]
+        payload = {
+            "reviews": reviews,
+            "page": page.number,
+            "has_next": page.has_next(),
+            "pages": paginator.num_pages
+        }
+        return JsonResponse(payload)
+
+    def get_reviews_page(self):
+        product = Product.objects.filter(pk=self.kwargs["pk"], shop_products__shop=self.request.shop).first()
+        queryset = ProductReview.objects.approved().filter(
+            product=product,
+            shop=self.request.shop,
+        ).order_by("-created_on")
+
+        paginator = Paginator(queryset, 20)
+        page = self.request.GET.get('page')
+
+        try:
+            return paginator, paginator.page(page)
+        except PageNotAnInteger:
+            return paginator, paginator.page(1)
+        except EmptyPage:
+            return paginator, paginator.page(paginator.num_pages)

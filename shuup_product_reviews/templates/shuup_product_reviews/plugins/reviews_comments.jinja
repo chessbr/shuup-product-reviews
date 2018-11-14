@@ -1,0 +1,9 @@
+{% if review_product %}
+<script src="{{ static('shuup_product_reviews/shuup_product_reviews.js') }}"></script>
+<div class="product-review-comments" data-product="{{ review_product.pk }}">
+    <h3 class="reviews-title">{{ _("Reviews") }}</h3>
+    <div class="reviews text-center">
+        <p><i class="fa fa-spin fa-spinner fa-2x"></i></p>
+    </div>
+</div>
+{% endif %}
