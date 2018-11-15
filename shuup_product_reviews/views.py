@@ -6,19 +6,19 @@
 # This source code is licensed under the OSL-3.0 license found in the
 # LICENSE file in the root directory of this source tree.
 from django import forms
+from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.core.urlresolvers import reverse
 from django.db.transaction import atomic
 from django.http.response import JsonResponse
 from django.views.generic import TemplateView, View
 
-from shuup.core.models import Order, Product, ProductMode
+from shuup.core.models import Product
 from shuup.front.views.dashboard import DashboardViewMixin
 from shuup_product_reviews.models import ProductReview
-from django.core.urlresolvers import reverse
 from shuup_product_reviews.utils import (
     get_orders_for_review, get_pending_products_reviews
 )
-from django.conf import settings
 
 
 class ProductReviewForm(forms.Form):

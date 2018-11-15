@@ -10,17 +10,13 @@ from __future__ import unicode_literals
 import math
 
 from django import forms
-from django.db.models import Avg, Sum
 from django.utils.translation import ugettext_lazy as _
 
 from shuup.core.models import ProductMode
 from shuup.xtheme import TemplatedPlugin
-from shuup_product_reviews.models import (
-    ProductReview, ProductReviewAggregation
-)
+from shuup.xtheme.plugins.forms import TranslatableField
+from shuup_product_reviews.models import ProductReview
 from shuup_product_reviews.utils import get_reviews_aggregation_for_product
-from shuup.xtheme.plugins.forms import GenericPluginForm, TranslatableField
-
 
 ACCEPTED_PRODUCT_MODES = [
     ProductMode.NORMAL,
