@@ -55,3 +55,33 @@ table.customer-pending-reviews-table {
         }
     }
 }
+
+.product-review-comments {
+    .reviews {
+        display: flex;
+        flex-direction: column;
+
+        .review-comment {
+            padding: 15px;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            width: 100%;
+            margin-bottom: 10px;
+
+            .rating {
+                color: $star-color;
+                margin: 0 10px;
+            }
+            .reviewer {
+                flex: 1;
+                font-weight: bold;
+            }
+            .comment {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    }
+}

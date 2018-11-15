@@ -72,7 +72,7 @@
                 <tr>
                     <td>
                     {% if review.product.primary_image %}
-                        <img style="width: 50px; height: 50px;" src="{{ review.product.primary_image.url }}" />
+                        <img src="{{ review.product.primary_image|thumbnail(size=(50, 50)) }}" />
                     {% elif review.product.variation_parent and review.product.variation_parent.primary_image %}
                         <img src="{{ review.product.variation_parent.primary_image|thumbnail(size=(50, 50)) }}" />
                     {% endif %}
@@ -92,8 +92,4 @@
     {% if not reviews_formset and not has_reviews %}
         <p>{{ _("No products to review.") }}</p>
     {% endif %}
-{% endblock %}
-
-{% block extrajs %}
-<script src="{{ static('shuup_product_reviews/shuup_product_reviews.js') }}"></script>
 {% endblock %}

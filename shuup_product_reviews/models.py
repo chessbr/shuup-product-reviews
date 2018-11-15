@@ -25,6 +25,9 @@ class ReviewStatus(Enum):
 
 
 class ProductReviewQuerySet(QuerySet):
+    def for_reviewer(self, shop, reviewer):
+        return self.filter(shop=shop, reviewer=reviewer)
+
     def waiting_approval(self):
         return self.filter(status=ReviewStatus.PENDING)
 

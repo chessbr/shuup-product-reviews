@@ -22,10 +22,10 @@ import ReviewComments from "./reviews";
 
     // mount review comments component when needed
     Array.from(document.getElementsByClassName("product-review-comments")).forEach((element) => {
-        const productId = element.getAttribute("data-product");
+        const commentsUrl = element.getAttribute("data-url");
         m.mount(element, {
             view() {
-                return m(ReviewComments, { product: productId });
+                return m(ReviewComments, { commentsUrl });
             }
         });
     });

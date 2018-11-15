@@ -18,3 +18,4 @@ def add_resources(context, content):
             return
 
     add_resource(context, "head_end", static("shuup_product_reviews/shuup_product_reviews.css"))
+    add_resource(context, "body_end", static("shuup_product_reviews/shuup_product_reviews.js"))

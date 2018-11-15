@@ -6,15 +6,19 @@
 # This source code is licensed under the OSL-3.0 license found in the
 # LICENSE file in the root directory of this source tree.
 from django import forms
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.transaction import atomic
+from django.http.response import JsonResponse
 from django.views.generic import TemplateView, View
 
 from shuup.core.models import Order, Product, ProductMode
 from shuup.front.views.dashboard import DashboardViewMixin
 from shuup_product_reviews.models import ProductReview
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.http.response import JsonResponse
-
+from django.core.urlresolvers import reverse
+from shuup_product_reviews.utils import (
+    get_orders_for_review, get_pending_products_reviews
+)
+from django.conf import settings
 
 
 class ProductReviewForm(forms.Form):
@@ -30,12 +34,8 @@ class ProductReviewForm(forms.Form):
     def save(self):
         data = self.cleaned_data
         if data.get("rating"):
-            order = Order.objects.complete().filter(
-                shop=self.request.shop,
-                customer__in=[self.request.customer, self.request.person],
-                lines__product=data["product"]
-            ).last()
-
+            # fetch the last order that this product was bought
+            order = get_orders_for_review(self.request).filter(lines__product=data["product"]).last()
             ProductReview.objects.get_or_create(
                 product=data["product"],
                 reviewer=self.request.person,
@@ -57,24 +57,13 @@ class ProductReviewsView(DashboardViewMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ProductReviewsView, self).get_context_data(**kwargs)
-        orders = Order.objects.complete().filter(
-            shop=self.request.shop,
-            customer__in=[self.request.customer, self.request.person]
-        ).distinct()
-        products = Product.objects.all_except_deleted(shop=self.request.shop).filter(
-            order_lines__order__in=orders,
-            mode__in=[ProductMode.NORMAL, ProductMode.VARIATION_CHILD]
-        ).distinct()
+        pending_products_reviews = get_pending_products_reviews(self.request)
+        context["reviews"] = ProductReview.objects.for_reviewer(self.request.shop, self.request.person)
 
-        products_to_review = products.exclude(product_reviews__reviewer=self.request.person)
-        context["reviews"] = ProductReview.objects.filter(
-            reviewer=self.request.person,
-            shop=self.request.shop
-        )
-        if products_to_review.exists():
+        if pending_products_reviews.exists():
             context["reviews_formset"] = ProductReviewModelFormset(
                 form_kwargs=dict(request=self.request),
-                initial=[dict(product=product) for product in products_to_review]
+                initial=[dict(product=product) for product in pending_products_reviews]
             )
         return context
 
@@ -90,21 +79,28 @@ class ProductReviewsView(DashboardViewMixin, TemplateView):
 
 class ProductReviewCommentsView(View):
     def get(self, request, *args, **kwargs):
-        paginator, page = self.get_reviews_page()
+        page = self.get_reviews_page()
         reviews = [
             {
+                "id": review.pk,
                 "date": review.created_on.isoformat(),
                 "rating": review.rating,
                 "comment": review.comment,
-                "reviwer": review.reviewer.name,
+                "reviewer": review.reviewer.name,
             }
             for review in page.object_list
         ]
+
+        next_page_url = None
+        if page.has_next():
+            next_page_url = "{}?page={}".format(
+                reverse('shuup:product_review_comments', kwargs=dict(pk=self.kwargs["pk"])),
+                page.number + 1
+            )
+
         payload = {
             "reviews": reviews,
-            "page": page.number,
-            "has_next": page.has_next(),
-            "pages": paginator.num_pages
+            "next_page_url": next_page_url,
         }
         return JsonResponse(payload)
 
@@ -115,12 +111,12 @@ class ProductReviewCommentsView(View):
             shop=self.request.shop,
         ).order_by("-created_on")
 
-        paginator = Paginator(queryset, 20)
+        paginator = Paginator(queryset, settings.PRODUCT_REVIEWS_PAGE_SIZE)
         page = self.request.GET.get('page')
 
         try:
-            return paginator, paginator.page(page)
+            return paginator.page(page)
         except PageNotAnInteger:
-            return paginator, paginator.page(1)
+            return paginator.page(1)
         except EmptyPage:
-            return paginator, paginator.page(paginator.num_pages)
+            return paginator.page(paginator.num_pages)

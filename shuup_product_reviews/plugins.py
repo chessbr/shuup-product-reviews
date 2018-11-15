@@ -15,7 +15,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from shuup.core.models import ProductMode
 from shuup.xtheme import TemplatedPlugin
-from shuup_product_reviews.models import ProductReviewAggregation, ProductReview
+from shuup_product_reviews.models import (
+    ProductReview, ProductReviewAggregation
+)
+from shuup_product_reviews.utils import get_reviews_aggregation_for_product
+from shuup.xtheme.plugins.forms import GenericPluginForm, TranslatableField
 
 
 ACCEPTED_PRODUCT_MODES = [
@@ -32,9 +36,16 @@ class ProductReviewStarRatingsPlugin(TemplatedPlugin):
     template_name = "shuup_product_reviews/plugins/star_rating.jinja"
 
     fields = [
-        ("show_customer_rating_label", forms.BooleanField(
-            label=_("Show customer rating label"),
-            required=False, initial=True
+        ("customer_ratings_title", TranslatableField(
+            label=_("Customer ratings title"),
+            required=False,
+            initial=_("Customer Ratings:")
+        )),
+        ("show_recommenders", forms.BooleanField(
+            label=_("Show number of customers that recommend the product"),
+            required=False,
+            initial=False,
+            help_text=_("Whether to show number of customer that recommends the product.")
         ))
     ]
 
@@ -51,17 +62,11 @@ class ProductReviewStarRatingsPlugin(TemplatedPlugin):
             product = context["product"]
 
         if product and product.mode in ACCEPTED_PRODUCT_MODES:
-            product_ids = [product.pk] + list(product.variation_children.values_list("pk", flat=True))
-            product_rating = ProductReviewAggregation.objects.filter(product_id__in=product_ids).aggregate(
-                rating=Avg("rating"),
-                reviews=Sum("review_count"),
-                would_recommend=Sum("would_recommend")
-            )
+            product_rating = get_reviews_aggregation_for_product(product)
 
             if product_rating["reviews"]:
                 rating = product_rating["rating"]
                 reviews = product_rating["reviews"]
-
                 full_stars = math.floor(rating)
                 empty_stars = math.floor(5 - rating)
                 half_star = (full_stars + empty_stars) < 5
@@ -71,8 +76,10 @@ class ProductReviewStarRatingsPlugin(TemplatedPlugin):
                     "empty_stars": int(empty_stars),
                     "reviews": reviews,
                     "rating": rating,
-                    "would_recommend": product_rating["would_recommend"] / reviews,
-                    "show_customer_rating_label": self.config.get("show_customer_rating_label", False)
+                    "would_recommend": product_rating["would_recommend"],
+                    "would_recommend_perc": product_rating["would_recommend"] / reviews,
+                    "show_recommenders": self.config.get("show_recommenders", False),
+                    "customer_ratings_title": self.get_translated_value("customer_ratings_title")
                 })
 
         return context
@@ -97,8 +104,12 @@ class ProductReviewCommentsPlugin(TemplatedPlugin):
 
         if product and product.mode in ACCEPTED_PRODUCT_MODES:
             product_ids = [product.pk] + list(product.variation_children.values_list("pk", flat=True))
-
-            if ProductReview.objects.approved().filter(product_id__in=product_ids, comment__isnull=False).exists():
+            reviews = ProductReview.objects.approved().filter(
+                shop=context["request"].shop,
+                product_id__in=product_ids,
+                comment__isnull=False
+            )
+            if reviews.exists():
                 context["review_product"] = product
 
         return context

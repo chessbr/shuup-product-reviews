@@ -1,8 +1,8 @@
 {% if reviews %}
 <div class="product-reviews-rating-star">
-    {% if show_customer_rating_label %}
+    {% if customer_ratings_title %}
     <div class="customer-rating-label">
-        <h3>{{ _("Customer Ratings:") }}</h3>
+        <h3>{{ customer_ratings_title }}</h3>
     </div>
     {% endif %}
     <span class="stars">
@@ -24,8 +24,14 @@
             {{ reviews_count }} reviews
         {%- endtrans -%}
     </span>
-    <span class="recommend">
-        ({{ _("{recommend_count} recommend this product").format(recommend_count=would_recommend|percent) }})
-    </span>
+    {% if show_recommenders and would_recommend %}
+    <div class="recommend">
+        {{ _("<strong>{recommend_count} of {reviews_count} ({recommend_count_percent})</strong> reviewers would recommend this product to a friend.").format(
+            reviews_count=reviews,
+            recommend_count=would_recommend,
+            recommend_count_percent=would_recommend_perc|percent,
+        ) }}
+    </div>
+    {% endif %}
 </div>
 {% endif %}
