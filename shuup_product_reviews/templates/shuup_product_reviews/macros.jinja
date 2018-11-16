@@ -18,7 +18,11 @@
                 <img src="{{ review.product.variation_parent.primary_image|thumbnail(size=(50, 50)) }}" />
             {% endif %}
             </td>
-            <td>{{ review.product.name }}</td>
+            <td>
+                <a href="{{ url('shuup:product', pk=review.product.pk, slug=review.product.slug) }}">
+                    {{ review.product.name }}
+                </a>
+            </td>
             <td>
                 {% for index in range(review.rating) %}
                     <i class="fa fa-star rating-star"></i>

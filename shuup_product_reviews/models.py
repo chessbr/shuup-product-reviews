@@ -5,7 +5,7 @@
 #
 # This source code is licensed under the OSL-3.0 license found in the
 # LICENSE file in the root directory of this source tree.
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Avg, Case, Count, QuerySet, Sum, Value, When
 from django.db.models.signals import post_delete, post_save
@@ -37,7 +37,10 @@ class ProductReview(models.Model):
     product = models.ForeignKey("shuup.Product", verbose_name=_("product"), related_name="product_reviews")
     reviewer = models.ForeignKey("shuup.Contact", verbose_name=_("reviewer"), related_name="product_reviews")
     order = models.ForeignKey("shuup.Order", verbose_name=_("order"), related_name="product_reviews")
-    rating = models.PositiveIntegerField(verbose_name=_("rating"), db_index=True, validators=[MaxValueValidator(5)])
+    rating = models.PositiveIntegerField(
+        verbose_name=_("rating"),
+        validators=[MaxValueValidator(5), MinValueValidator(1)]
+    )
     comment = models.TextField(blank=True, null=True, verbose_name=_("comment"))
     would_recommend = models.BooleanField(
         default=False,

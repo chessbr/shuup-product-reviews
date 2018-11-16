@@ -40,7 +40,9 @@
                     </td>
                     <td class="col-xs-3">
                         {{ review_form.product }}
-                        {{ review_form.initial.product.name }}
+                        <a href="{{ url('shuup:product', pk=review_form.initial.product.pk, slug=review_form.initial.product.slug) }}">
+                            {{ review_form.initial.product.name }}
+                        </a>
                     </td>
                     <td class="col-xs-3">
                         {{ review_form.rating }}
