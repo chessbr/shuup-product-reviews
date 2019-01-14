@@ -62,6 +62,11 @@ class ProductReview(models.Model):
             reviewer_name=self.reviewer.name
         )
 
+    def save(self, *args, **kwargs):
+        super(ProductReview, self).save(*args, **kwargs)
+        from shuup_product_reviews.utils import bump_star_rating_cache
+        bump_star_rating_cache(self.pk)
+
     def approve(self):
         self.status = ReviewStatus.APPROVED
         self.save()

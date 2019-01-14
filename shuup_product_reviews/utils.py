@@ -9,6 +9,7 @@ import math
 
 from django.db.models import Avg, Sum
 
+from shuup.core import cache
 from shuup.core.models import Order, Product, ProductMode
 from shuup_product_reviews.models import ProductReviewAggregation
 
@@ -82,11 +83,16 @@ def render_product_review_ratings(product, customer_ratings_title=None, show_rec
     Render the star rating template for a given product and options.
     Returns None if no reviews exists for product
     """
-    from django.template import loader
-
     if is_product_valid_mode(product):
+        cached_star_rating = get_cached_star_rating(product.pk)
+        if cached_star_rating is not None:
+            if cached_star_rating == -1:
+                return ""
+            return cached_star_rating
+
         product_rating = get_reviews_aggregation_for_product(product)
         rating = product_rating["rating"]
+        star_rating = None
         if rating:
             (full_stars, empty_stars, half_star) = get_stars_from_rating(rating)
             context = {
@@ -98,4 +104,21 @@ def render_product_review_ratings(product, customer_ratings_title=None, show_rec
                 "customer_ratings_title": customer_ratings_title,
                 "show_recommenders": show_recommenders
             }
-            return loader.render_to_string("shuup_product_reviews/plugins/star_rating.jinja", context=context)
+            from django.template import loader
+            star_rating = loader.render_to_string("shuup_product_reviews/plugins/star_rating.jinja", context=context)
+
+        # -1 is a flag that indicates that there is no content to render
+        cache_star_rating(product.id, star_rating or -1)
+        return star_rating or ""
+
+
+def get_cached_star_rating(product_id):
+    return cache.get("product_reviews_star_rating_{}".format(product_id))
+
+
+def cache_star_rating(product_id, star_rating):
+    cache.set("product_reviews_star_rating_{}".format(product_id), star_rating)
+
+
+def bump_star_rating_cache(product_id):
+    cache.bump_version("product_reviews_star_rating_{}".format(product_id))

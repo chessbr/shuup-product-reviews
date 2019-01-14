@@ -19,12 +19,17 @@ from .factories import create_random_review_for_product
 def test_comments_view():
     shop = factories.get_default_shop()
     product = factories.create_product("product", shop=shop, supplier=factories.get_default_supplier())
+    product_no_reviews = factories.create_product("product-no", shop=shop, supplier=factories.get_default_supplier())
 
     # create 15 reviews for the product, it should exist 3 pages of comments
     [create_random_review_for_product(shop, product) for _ in range(15)]
 
-    totals = get_reviews_aggregation_for_product(product)
-    rendered = render_product_review_ratings(product)
+    for test in range(2):
+        totals = get_reviews_aggregation_for_product(product)
+        rendered = render_product_review_ratings(product)
 
-    assert '<span class="rating">%0.1f</span>' % totals["rating"] in rendered
-    assert '%d reviews' % totals["reviews"] in rendered
+        assert '<span class="rating">%0.1f</span>' % totals["rating"] in rendered
+        assert '%d reviews' % totals["reviews"] in rendered
+
+        rendered = render_product_review_ratings(product_no_reviews)
+        assert rendered == ""
