@@ -32,23 +32,21 @@ class VendorReviewListView(BaseProductReviewListView):
             "supplier",
             _("Vendor"),
             filter_config=TextFilter(
-                filter_field="supplier__name",
-                placeholder=_("Filter by vendor...")
-            )
+                filter_field="supplier__name", placeholder=_("Filter by vendor...")
+            ),
         ),
         Column(
             "option",
             _("Vendor Review Option"),
             filter_config=TextFilter(
-                filter_field="option__name",
-                placeholder=_("Filter by option...")
-            )
-        )
+                filter_field="option__name", placeholder=_("Filter by option...")
+            ),
+        ),
     ] + BaseProductReviewListView.default_columns
 
     mass_actions = [
         "shuup_vendor_reviews.admin_module.mass_actions.ApproveVendorReviewMassAction",
-        "shuup_vendor_reviews.admin_module.mass_actions.RejectVendorReviewMassAction"
+        "shuup_vendor_reviews.admin_module.mass_actions.RejectVendorReviewMassAction",
     ]
 
     def get_queryset(self):
@@ -59,7 +57,7 @@ class VendorReviewOptionListView(PicotableListView):
     model = VendorReviewOption
 
     default_columns = [
-        Column("name", _(u"Name"), linked=True, filter_config=TextFilter()),
+        Column("name", _("Name"), linked=True, filter_config=TextFilter()),
     ]
 
     def get_queryset(self):
@@ -69,7 +67,7 @@ class VendorReviewOptionListView(PicotableListView):
 class VendorReviewOptionForm(ShuupAdminForm):
     class Meta:
         model = VendorReviewOption
-        exclude = ('shop',)
+        exclude = ("shop",)
 
 
 class VendorReviewOptionEditView(CreateOrUpdateView):
@@ -84,7 +82,9 @@ class VendorReviewOptionEditView(CreateOrUpdateView):
         delete_url = None
         option = self.get_object()
         if option and option.pk:
-            delete_url = reverse("shuup_admin:vendor_reviews_options.delete", kwargs={"pk": option.pk})
+            delete_url = reverse(
+                "shuup_admin:vendor_reviews_options.delete", kwargs={"pk": option.pk}
+            )
 
         return get_default_edit_toolbar(self, save_form_id, delete_url=delete_url)
 
@@ -107,5 +107,5 @@ class VendorReviewOptionDeleteView(DetailView):
         option = self.get_object()
         name = force_text(option)
         option.delete()
-        messages.success(request, _(u"%s has been deleted.") % name)
+        messages.success(request, _("%s has been deleted.") % name)
         return HttpResponseRedirect(reverse("shuup_admin:vendor_reviews_options.list"))

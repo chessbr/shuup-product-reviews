@@ -18,26 +18,26 @@ urlpatterns = [
     url(
         r"vendor_reviews_options/$",
         login_required(VendorReviewOptionsView.as_view()),
-        name="vendor_reviews_options"
+        name="vendor_reviews_options",
     ),
     url(
         r"vendor_reviews_options/(?P<pk>\d+)/comments/(?P<option_id>\d+)$",
         VendorReviewOptionsCommentsView.as_view(),
-        name="vendor_review_options_comments"
+        name="vendor_review_options_comments",
     ),
     url(
         r"vendor_reviews/$",
         login_required(VendorReviewsView.as_view()),
-        name="vendor_reviews"
+        name="vendor_reviews",
     ),
     url(
         r"vendor_reviews/(?P<pk>\d+)/comments/$",
         VendorReviewCommentsView.as_view(),
-        name="vendor_review_comments"
+        name="vendor_review_comments",
     ),
     url(
         r"vendor_reviews/(?P<pk>\d+)/comments/(?P<option>\d+)/$",
         VendorReviewCommentsOptionsView.as_view(),
-        name="vendor_review_comments_options"
-    )
+        name="vendor_review_comments_options",
+    ),
 ]

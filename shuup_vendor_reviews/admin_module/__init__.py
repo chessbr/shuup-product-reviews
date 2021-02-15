@@ -20,10 +20,12 @@ from shuup_vendor_reviews.models import VendorReviewOption
 
 class SupplierReviewOptionsModule(AdminModule):
     name = _("Vendor Review Options")
-    breadcrumbs_menu_entry = MenuEntry(name, url="shuup_admin:vendor_reviews_options.list")
+    breadcrumbs_menu_entry = MenuEntry(
+        name, url="shuup_admin:vendor_reviews_options.list"
+    )
 
     default_columns = [
-        Column("name", _(u"Name"), linked=True, filter_config=TextFilter()),
+        Column("name", _("Name"), linked=True, filter_config=TextFilter()),
     ]
 
     def get_urls(self):
@@ -31,17 +33,18 @@ class SupplierReviewOptionsModule(AdminModule):
             admin_url(
                 r"^vendor_reviews_options/(?P<pk>\d+)/delete/$",
                 "shuup_vendor_reviews.admin_module.views.VendorReviewOptionDeleteView",
-                name="vendor_reviews_options.delete"
+                name="vendor_reviews_options.delete",
             ),
-
         ] + get_edit_and_list_urls(
             url_prefix="^vendor_reviews_options",
             view_template="shuup_vendor_reviews.admin_module.views.VendorReviewOption%sView",
-            name_template="vendor_reviews_options.%s"
+            name_template="vendor_reviews_options.%s",
         )
 
     def get_model_url(self, object, kind, shop=None):
-        return derive_model_url(VendorReviewOption, "shuup_admin:vendor_reviews_options", object, kind)
+        return derive_model_url(
+            VendorReviewOption, "shuup_admin:vendor_reviews_options", object, kind
+        )
 
     def get_menu_entries(self, request):
         return [
@@ -51,7 +54,7 @@ class SupplierReviewOptionsModule(AdminModule):
                 url="shuup_admin:vendor_reviews_options.list",
                 category=STOREFRONT_MENU_CATEGORY,
                 subcategory="other_settings",
-                ordering=6
+                ordering=6,
             )
         ]
 
@@ -65,13 +68,13 @@ class SupplierReviewsModule(AdminModule):
             admin_url(
                 r"^vendor_reviews/$",
                 "shuup_vendor_reviews.admin_module.views.VendorReviewListView",
-                name="vendor_reviews.list"
+                name="vendor_reviews.list",
             ),
             admin_url(
                 r"^vendor_reviews/list-settings/",
                 "shuup.admin.modules.settings.views.ListSettingsView",
-                name="vendor_reviews.list_settings"
-            )
+                name="vendor_reviews.list_settings",
+            ),
         ]
 
     def get_menu_entries(self, request):
@@ -82,6 +85,6 @@ class SupplierReviewsModule(AdminModule):
                 url="shuup_admin:vendor_reviews.list",
                 category=SETTINGS_MENU_CATEGORY,
                 subcategory="other_settings",
-                ordering=6
+                ordering=6,
             )
         ]

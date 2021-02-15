@@ -36,14 +36,12 @@ class ReviewSerializer(serializers.ModelSerializer):
     supplier = VendorSerializer(read_only=True)
     reviewer = ReviewerSerializer(read_only=True)
     destination = serializers.PrimaryKeyRelatedField(
-        write_only=True,
-        source="supplier",
-        queryset=Supplier.objects.enabled()
+        write_only=True, source="supplier", queryset=Supplier.objects.enabled()
     )
 
     class Meta:
         model = VendorReview
-        exclude = ("shop", )
+        exclude = ("shop",)
         extra_kwargs = dict(
             status=dict(read_only=True),
         )
@@ -53,11 +51,11 @@ class ReviewSerializer(serializers.ModelSerializer):
         data["reviewer"] = get_person_contact(self.context["request"].user)
 
         existing_vendor_review = VendorReview.objects.filter(
-            supplier=data["supplier"],
-            reviewer=data["reviewer"],
-            shop=data["shop"]
+            supplier=data["supplier"], reviewer=data["reviewer"], shop=data["shop"]
         )
         if existing_vendor_review.exists():
-            raise serializers.ValidationError(_("A review for this vendor already exists."))
+            raise serializers.ValidationError(
+                _("A review for this vendor already exists.")
+            )
 
         return super().create(data)

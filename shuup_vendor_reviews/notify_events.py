@@ -15,7 +15,9 @@ class VendorReviewCreated(Event):
     identifier = "vendor_review_created"
     name = _("Vendor Review Created")
 
-    vendor_review = Variable(_("Vendor Review"), type=Model("shuup_vendor_reviews.VendorReview"))
+    vendor_review = Variable(
+        _("Vendor Review"), type=Model("shuup_vendor_reviews.VendorReview")
+    )
 
     reviewer_email = Variable(_("Customer Email"), type=Email)
     reviewer_phone = Variable(_("Customer Phone"), type=Phone)
@@ -30,10 +32,8 @@ def send_vendor_review_created_notification(vendor_review):
 
     params = dict(
         vendor_review=vendor_review,
-
         reviewer_email=reviewer.email,
         reviewer_phone=reviewer.phone,
-
         shop_email=shop.contact_address.email if shop.contact_address else "",
         shop_phone=shop.contact_address.phone if shop.contact_address else "",
     )

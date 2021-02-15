@@ -8,18 +8,29 @@ import parler.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('shuup_vendor_reviews', '0002_rating-opt'),
+        ("shuup_vendor_reviews", "0002_rating-opt"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='vendorreviewoption',
-            name='shop',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='supplier_reviews_option', to='shuup.Shop', verbose_name='shop'),
+            model_name="vendorreviewoption",
+            name="shop",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="supplier_reviews_option",
+                to="shuup.Shop",
+                verbose_name="shop",
+            ),
         ),
         migrations.AlterField(
-            model_name='vendorreviewoptiontranslation',
-            name='master',
-            field=parler.fields.TranslationsForeignKey(editable=False, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='translations', to='shuup_vendor_reviews.VendorReviewOption'),
+            model_name="vendorreviewoptiontranslation",
+            name="master",
+            field=parler.fields.TranslationsForeignKey(
+                editable=False,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="translations",
+                to="shuup_vendor_reviews.VendorReviewOption",
+            ),
         ),
     ]

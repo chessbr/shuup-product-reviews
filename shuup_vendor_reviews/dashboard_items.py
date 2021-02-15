@@ -32,8 +32,7 @@ class VendorReviewDashboardItem(DashboardItem):
     def get_context(self):
         context = super(VendorReviewDashboardItem, self).get_context()
         context["reviews"] = VendorReview.objects.for_reviewer(
-            self.request.shop,
-            self.request.person
+            self.request.shop, self.request.person
         ).order_by("-created_on")[:5]
         return context
 
@@ -54,7 +53,6 @@ class VendorReviewWithOptionsDashboardItem(DashboardItem):
     def get_context(self):
         context = super(VendorReviewWithOptionsDashboardItem, self).get_context()
         context["reviews"] = VendorReview.objects.for_reviewer(
-            self.request.shop,
-            self.request.person
+            self.request.shop, self.request.person
         ).order_by("-created_on")[:5]
         return context
