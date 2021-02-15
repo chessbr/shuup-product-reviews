@@ -1,0 +1,79 @@
+{% if reviews %}
+    <div class="product-reviews-rating-star vendor-reviews-rating-star {% if minified %} minified{% endif %}">
+        {% if minified %}
+            <span class="stars">
+                <i class="fa fa-star star-rating-full" aria-hidden="true"></i>
+            </span>
+            <span class="rating">
+                {{ "%0.1f"|format(rating) }}
+                <span class="sr-only">{{ _("Rating") }}&nbsp;</span>
+            </span>
+            <span class="count">
+                <span aria-hidden="true">
+                    ({{ reviews }})
+                </span>
+                <span class="sr-only">
+                    {%- trans reviews_count=reviews -%}
+                        {{ reviews_count }} review
+                        {%- pluralize -%}
+                        {{ reviews_count }} reviews
+                    {%- endtrans -%}
+                </span>
+            </span>
+        {% else %}
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <div class="row customer-rating-label">
+                        {% if customer_ratings_title %}
+                            <div class="customer-rating-label">
+                                <h3>{{ customer_ratings_title }}</h3>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="row stars-container">
+                        {% for options_rating in options_ratings %}
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6 text-right">
+                                    {{ options_rating.options_name }}
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    {% for full_star in range(options_rating.full_stars) %}
+                                        <i class="fa fa-star star-rating-full"></i>
+                                    {% endfor %}
+                                    {% if options_rating.half_stars %}
+                                        <i class="fa fa-star-half-o star-rating-half"></i>
+                                    {% endif %}
+                                    {% for empty_star in range(options_rating.empty_stars) %}
+                                        <i class="fa fa-star-o star-rating-empty"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="row review-count-container">
+                        <div class="col-sm-12 md-12 text-center">
+                            <span class="count">
+                                        {% trans %}Based on {% endtrans %}
+                                {%- trans reviews_count=reviews -%}
+                                    {{ reviews_count }} review
+                                    {%- pluralize -%}
+                                    {{ reviews_count }} reviews
+                                {%- endtrans -%}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row recommenations">
+                        <div class="col-sm-12 col-md-12 text-center">
+                            {% if show_recommenders and would_recommend %}
+                                <div class="recommend">
+                                    {{ _("<strong>{recommend_count} of {reviews_count} ({recommend_count_percent})</strong> reviewers would recommend this product to a friend.").format(reviews_count=reviews,recommend_count=would_recommend,recommend_count_percent=would_recommend_perc|percent,) }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endif %}

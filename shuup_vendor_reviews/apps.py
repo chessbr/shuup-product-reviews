@@ -27,6 +27,7 @@ class AppConfig(shuup.apps.AppConfig):
             "shuup_vendor_reviews.plugins.VendorReviewOptionStarRatingsPlugin",
             "shuup_vendor_reviews.plugins.VendorReviewOptionCommentsPlugin",
             "shuup_vendor_reviews.plugins.VendorReviewOptionTabs",
+            "shuup_vendor_reviews.plugins.AverageOptionsRatingsPlugin",
             ],
         "customer_dashboard_items": [
             "shuup_vendor_reviews.dashboard_items:VendorReviewDashboardItem",
@@ -48,4 +49,4 @@ class AppConfig(shuup.apps.AppConfig):
 
     def ready(self):
         # connect signals
-        import shuup_vendor_reviews.signal_handlers    # noqa (C901)
+        import shuup_vendor_reviews.signal_handlers  # noqa (C901)

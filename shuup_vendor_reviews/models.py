@@ -62,6 +62,11 @@ class VendorReviewQuerySet(models.QuerySet):
     def for_reviewer_by_option(self, shop, reviewer, option):
         return self.filter(shop=shop, reviewer=reviewer, option=option).order_by("supplier")
 
+    def options_ratings(self):
+        from django.db.models import F
+        return VendorReviewOption.objects.filter(vendor_review_options__in=self).values('translations__name').\
+            annotate(average=Avg('vendor_review_options__rating'), options_name=F('translations__name'))
+
 
 class VendorReview(models.Model):
     shop = models.ForeignKey(
