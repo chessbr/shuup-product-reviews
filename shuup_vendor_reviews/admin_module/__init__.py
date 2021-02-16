@@ -46,8 +46,7 @@ class SupplierReviewOptionsModule(AdminModule):
                 text=self.name,
                 icon="fa fa-star",
                 url="shuup_admin:vendor_reviews_options.list",
-                category=STOREFRONT_MENU_CATEGORY,
-                subcategory="other_settings",
+                category=SETTINGS_MENU_CATEGORY,
                 ordering=6,
             )
         ]
@@ -77,8 +76,7 @@ class SupplierReviewsModule(AdminModule):
                 text=self.name,
                 icon="fa fa-star",
                 url="shuup_admin:vendor_reviews.list",
-                category=SETTINGS_MENU_CATEGORY,
-                subcategory="other_settings",
+                category=STOREFRONT_MENU_CATEGORY,
                 ordering=6,
             )
         ]

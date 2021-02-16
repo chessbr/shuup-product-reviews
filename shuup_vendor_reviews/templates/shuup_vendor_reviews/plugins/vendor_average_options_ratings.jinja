@@ -32,11 +32,11 @@
                     </div>
                     <div class="row stars-container">
                         {% for options_rating in options_ratings %}
-                            <div class="row">
-                                <div class="col-md-6 col-sm-6 text-right">
+                            <div class="options-ratings">
+                                <div class="col-md-6 col-sm-6 option-name">
                                     {{ options_rating.options_name }}
                                 </div>
-                                <div class="col-md-6 col-sm-6">
+                                <div class="col-md-6 col-sm-6 option-rating">
                                     {% for full_star in range(options_rating.full_stars) %}
                                         <i class="fa fa-star star-rating-full"></i>
                                     {% endfor %}

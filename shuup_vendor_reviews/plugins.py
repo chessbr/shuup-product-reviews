@@ -154,7 +154,6 @@ class VendorReviewOptionStarRatingsPlugin(TemplatedPlugin):
     name = _("Vendor Review Option Rating")
     template_name = "shuup_vendor_reviews/plugins/vendor_star_option_rating.jinja"
     required_context_variables = ["supplier"]
-
     editor_form_class = VendorReviewOptionSelectionConfigForm
 
     fields = [
@@ -377,7 +376,7 @@ def get_vendor_options_ratings_cache_item(shop):
 
 class AverageOptionsRatingsPlugin(TemplatedPlugin):
     identifier = "averaged_options_ratings"
-    name = _("Average Options Ratings")
+    name = _("Vendor Review Options Ratings")
     template_name = "shuup_vendor_reviews/plugins/vendor_average_options_ratings.jinja"
     required_context_variables = ["supplier"]
 
