@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Enter here all the changes made to the development version
 
+## [1.1.0] - 2021-02-16
+
+### Added
+
+- Add xtheme plugin to show the summary of all vendor reviews
+
 ## [1.0.9] - 2021-02-04
 
 - Add package.json
