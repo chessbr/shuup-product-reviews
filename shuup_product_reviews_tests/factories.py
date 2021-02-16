@@ -9,15 +9,16 @@ import random
 from uuid import uuid4
 
 from faker import Faker
-
 from shuup.core.models import OrderStatus
 from shuup.testing import factories
+
 from shuup_product_reviews.models import ProductReview, ReviewStatus
 from shuup_vendor_reviews.models import VendorReview
 
 
-def create_random_review_for_product(shop, product, reviewer=None, order=None, approved=True,
-                                     rating=None, would_recommend=None, generate_comment=True):
+def create_random_review_for_product(
+    shop, product, reviewer=None, order=None, approved=True, rating=None, would_recommend=None, generate_comment=True
+):
     if reviewer is None:
         reviewer = factories.create_random_person("en")
 
@@ -27,7 +28,7 @@ def create_random_review_for_product(shop, product, reviewer=None, order=None, a
             supplier=factories.get_default_supplier(),
             quantity=1,
             taxless_base_unit_price=10,
-            shop=shop
+            shop=shop,
         )
 
     if rating is None:
@@ -48,12 +49,13 @@ def create_random_review_for_product(shop, product, reviewer=None, order=None, a
         rating=rating,
         comment=comment,
         would_recommend=would_recommend,
-        status=(ReviewStatus.APPROVED if approved else ReviewStatus.PENDING)
+        status=(ReviewStatus.APPROVED if approved else ReviewStatus.PENDING),
     )
 
 
-def create_random_review_for_reviwer(shop, reviewer, order=None, approved=True,
-                                     rating=None, would_recommend=None, generate_comment=True):
+def create_random_review_for_reviwer(
+    shop, reviewer, order=None, approved=True, rating=None, would_recommend=None, generate_comment=True
+):
     if reviewer is None:
         reviewer = factories.create_random_person("en")
 
@@ -65,7 +67,7 @@ def create_random_review_for_reviwer(shop, reviewer, order=None, approved=True,
             supplier=factories.get_default_supplier(),
             quantity=1,
             taxless_base_unit_price=10,
-            shop=shop
+            shop=shop,
         )
 
     if rating is None:
@@ -86,7 +88,7 @@ def create_random_review_for_reviwer(shop, reviewer, order=None, approved=True,
         rating=rating,
         comment=comment,
         would_recommend=would_recommend,
-        status=(ReviewStatus.APPROVED if approved else ReviewStatus.PENDING)
+        status=(ReviewStatus.APPROVED if approved else ReviewStatus.PENDING),
     )
 
 
@@ -96,7 +98,7 @@ def create_random_order_to_review(shop, customer):
         supplier=factories.get_default_supplier(),
         quantity=1,
         taxless_base_unit_price=10,
-        shop=shop
+        shop=shop,
     )
     order.customer = customer
     order.create_payment(order.taxful_total_price)
@@ -137,5 +139,5 @@ def create_vendor_review_for_order_line(order_line, rating, comment=None, approv
         reviewer=order_line.order.customer,
         rating=rating,
         comment=comment,
-        status=(ReviewStatus.APPROVED if approved else ReviewStatus.PENDING)
+        status=(ReviewStatus.APPROVED if approved else ReviewStatus.PENDING),
     )

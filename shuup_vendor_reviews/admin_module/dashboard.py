@@ -9,11 +9,8 @@ from __future__ import unicode_literals
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-
 from shuup import configuration
-from shuup.front.admin_module.forms import (
-    BaseSettingsForm, BaseSettingsFormPart
-)
+from shuup.front.admin_module.forms import BaseSettingsForm, BaseSettingsFormPart
 
 
 def is_dashboard_enabled(shop):
@@ -25,15 +22,11 @@ def is_dashboard_menu_enabled(shop):
 
 
 def is_dashboard_with_options_enabled(shop):
-    return configuration.get(
-        shop, "show_vendor_reviews_with_options_on_dashboard", False
-    )
+    return configuration.get(shop, "show_vendor_reviews_with_options_on_dashboard", False)
 
 
 def is_dashboard_menu_with_options_enabled(shop):
-    return configuration.get(
-        shop, "show_vendor_reviews_with_options_on_dashboard_menu", False
-    )
+    return configuration.get(shop, "show_vendor_reviews_with_options_on_dashboard_menu", False)
 
 
 class VendorReviewsSettingsForm(BaseSettingsForm):

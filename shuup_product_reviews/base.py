@@ -29,8 +29,7 @@ class BaseCommentsView(View):
         next_page_url = None
         if page.has_next():
             next_page_url = "{}?page={}".format(
-                reverse('shuup:%s' % self.view_name, kwargs=dict(pk=self.kwargs["pk"])),
-                page.number + 1
+                reverse("shuup:%s" % self.view_name, kwargs=dict(pk=self.kwargs["pk"])), page.number + 1
             )
 
         payload = {

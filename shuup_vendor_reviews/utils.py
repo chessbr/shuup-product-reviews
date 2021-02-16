@@ -6,10 +6,11 @@
 # This source code is licensed under the OSL-3.0 license found in the
 # LICENSE file in the root directory of this source tree.
 import math
-from django.db.models import Avg, Sum
 
+from django.db.models import Avg, Sum
 from shuup.core import cache
-from shuup.core.models import get_person_contact, Order, Supplier
+from shuup.core.models import Order, Supplier, get_person_contact
+
 from shuup_vendor_reviews.models import VendorReviewAggregation
 
 
@@ -52,9 +53,7 @@ def get_reviews_aggregation_for_supplier(supplier):
 
 
 def get_reviews_aggregation_for_supplier_by_option(supplier, option):
-    return VendorReviewAggregation.objects.filter(
-        supplier=supplier, option=option
-    ).aggregate(
+    return VendorReviewAggregation.objects.filter(supplier=supplier, option=option).aggregate(
         rating=Avg("rating"),
         reviews=Sum("review_count"),
         would_recommend=Sum("would_recommend"),
@@ -83,9 +82,7 @@ def render_vendor_review_ratings(
     Returns None if no reviews exists for product
     """
 
-    cached_star_rating = get_cached_star_rating(
-        vendor.pk, (option.pk if option else "")
-    )
+    cached_star_rating = get_cached_star_rating(vendor.pk, (option.pk if option else ""))
     if cached_star_rating is not None:
         return cached_star_rating
 
@@ -106,9 +103,7 @@ def render_vendor_review_ratings(
         }
         from django.template import loader
 
-        star_rating = loader.render_to_string(
-            "shuup_vendor_reviews/plugins/vendor_star_rating.jinja", context=context
-        )
+        star_rating = loader.render_to_string("shuup_vendor_reviews/plugins/vendor_star_rating.jinja", context=context)
 
     if star_rating is not None:
         cache_star_rating(vendor.id, star_rating, (option.pk if option else ""))
@@ -117,9 +112,7 @@ def render_vendor_review_ratings(
 
 
 def get_cached_star_rating(vendor_id, option_id=None):
-    return cache.get(
-        "vendor_reviews_star_rating_{}_{}".format(vendor_id, (option_id or ""))
-    )
+    return cache.get("vendor_reviews_star_rating_{}_{}".format(vendor_id, (option_id or "")))
 
 
 def cache_star_rating(vendor_id, star_rating, option_id=None):
@@ -129,6 +122,4 @@ def cache_star_rating(vendor_id, star_rating, option_id=None):
 
 
 def bump_star_rating_cache(vendor_id, option_id=None):
-    cache.bump_version(
-        "vendor_reviews_star_rating_{}_{}".format(vendor_id, (option_id or ""))
-    )
+    cache.bump_version("vendor_reviews_star_rating_{}_{}".format(vendor_id, (option_id or "")))

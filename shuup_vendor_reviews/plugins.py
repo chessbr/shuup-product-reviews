@@ -8,20 +8,20 @@
 from __future__ import unicode_literals
 
 import math
+
 from django import forms
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-
 from shuup.core.utils import context_cache
 from shuup.xtheme import TemplatedPlugin
 from shuup.xtheme.plugins.forms import GenericPluginForm, TranslatableField
-from shuup.xtheme.plugins.widgets import (
-    XThemeSelect2ModelChoiceField, XThemeSelect2ModelMultipleChoiceField
-)
+from shuup.xtheme.plugins.widgets import XThemeSelect2ModelChoiceField, XThemeSelect2ModelMultipleChoiceField
+
 from shuup_vendor_reviews.models import VendorReview, VendorReviewOption
 from shuup_vendor_reviews.utils import (
     get_reviews_aggregation_for_supplier,
-    get_reviews_aggregation_for_supplier_by_option, get_stars_from_rating
+    get_reviews_aggregation_for_supplier_by_option,
+    get_stars_from_rating,
 )
 
 
@@ -46,9 +46,7 @@ class VendorReviewStarRatingsPlugin(TemplatedPlugin):
                 label=_("Show number of customers that recommend the vendor"),
                 required=False,
                 initial=False,
-                help_text=_(
-                    "Whether to show number of customers that recommend the vendor."
-                ),
+                help_text=_("Whether to show number of customers that recommend the vendor."),
             ),
         ),
     ]
@@ -71,14 +69,9 @@ class VendorReviewStarRatingsPlugin(TemplatedPlugin):
                         "reviews": reviews,
                         "rating": rating,
                         "would_recommend": supplier_rating["would_recommend"],
-                        "would_recommend_perc": supplier_rating["would_recommend"]
-                        / reviews,
-                        "show_recommenders": self.config.get(
-                            "show_recommenders", False
-                        ),
-                        "customer_ratings_title": self.get_translated_value(
-                            "customer_ratings_title"
-                        ),
+                        "would_recommend_perc": supplier_rating["would_recommend"] / reviews,
+                        "show_recommenders": self.config.get("show_recommenders", False),
+                        "customer_ratings_title": self.get_translated_value("customer_ratings_title"),
                     }
                 )
 
@@ -125,9 +118,7 @@ class VendorReviewCommentsPlugin(TemplatedPlugin):
             if reviews.exists():
                 context["review_supplier"] = supplier
                 context["title"] = self.get_translated_value("title")
-                context["no_reviews_text"] = self.get_translated_value(
-                    "no_reviews_text"
-                )
+                context["no_reviews_text"] = self.get_translated_value("no_reviews_text")
                 context["load_more_text"] = self.get_translated_value("load_more_text")
 
         return context
@@ -181,9 +172,7 @@ class VendorReviewOptionStarRatingsPlugin(TemplatedPlugin):
                 label=_("Show number of customers that recommend the vendor"),
                 required=False,
                 initial=False,
-                help_text=_(
-                    "Whether to show number of customers that recommend the vendor."
-                ),
+                help_text=_("Whether to show number of customers that recommend the vendor."),
             ),
         ),
     ]
@@ -197,9 +186,7 @@ class VendorReviewOptionStarRatingsPlugin(TemplatedPlugin):
 
         if supplier and supplier.enabled and option_id:
             option = VendorReviewOption.objects.get(pk=option_id)
-            supplier_rating = get_reviews_aggregation_for_supplier_by_option(
-                supplier, option
-            )
+            supplier_rating = get_reviews_aggregation_for_supplier_by_option(supplier, option)
             if supplier_rating["reviews"]:
                 rating = supplier_rating["rating"]
                 reviews = supplier_rating["reviews"]
@@ -213,14 +200,9 @@ class VendorReviewOptionStarRatingsPlugin(TemplatedPlugin):
                             "reviews": reviews,
                             "rating": rating,
                             "would_recommend": supplier_rating["would_recommend"],
-                            "would_recommend_perc": supplier_rating["would_recommend"]
-                            / reviews,
-                            "show_recommenders": self.config.get(
-                                "show_recommenders", False
-                            ),
-                            "customer_ratings_title": self.get_translated_value(
-                                "customer_ratings_title"
-                            ),
+                            "would_recommend_perc": supplier_rating["would_recommend"] / reviews,
+                            "show_recommenders": self.config.get("show_recommenders", False),
+                            "customer_ratings_title": self.get_translated_value("customer_ratings_title"),
                         }
                     }
                 )
@@ -275,9 +257,7 @@ class VendorReviewOptionCommentsPlugin(TemplatedPlugin):
                 context["review_supplier"] = supplier
                 context["option"] = option_id
                 context["title"] = self.get_translated_value("title")
-                context["no_reviews_text"] = self.get_translated_value(
-                    "no_reviews_text"
-                )
+                context["no_reviews_text"] = self.get_translated_value("no_reviews_text")
                 context["load_more_text"] = self.get_translated_value("load_more_text")
 
         return context
@@ -312,9 +292,7 @@ class VendorReviewOptionTabs(TemplatedPlugin):
     fields = [
         (
             "main_title",
-            TranslatableField(
-                label=_("Main title"), required=False, initial=_("Reviews")
-            ),
+            TranslatableField(label=_("Main title"), required=False, initial=_("Reviews")),
         ),
         (
             "show_recommenders",
@@ -322,9 +300,7 @@ class VendorReviewOptionTabs(TemplatedPlugin):
                 label=_("Show number of customers that recommend the vendor"),
                 required=False,
                 initial=False,
-                help_text=_(
-                    "Whether to show number of customers that recommend the vendor."
-                ),
+                help_text=_("Whether to show number of customers that recommend the vendor."),
             ),
         ),
         (
@@ -360,9 +336,7 @@ class VendorReviewOptionTabs(TemplatedPlugin):
                 options = VendorReviewOption.objects.none()
 
             for option in options:
-                supplier_rating = get_reviews_aggregation_for_supplier_by_option(
-                    supplier, option
-                )
+                supplier_rating = get_reviews_aggregation_for_supplier_by_option(supplier, option)
 
                 if supplier_rating["reviews"]:
                     rating = supplier_rating["rating"]
@@ -378,17 +352,10 @@ class VendorReviewOptionTabs(TemplatedPlugin):
                                 "reviews": rating_reviews,
                                 "rating": rating,
                                 "would_recommend": supplier_rating["would_recommend"],
-                                "would_recommend_perc": supplier_rating[
-                                    "would_recommend"
-                                ]
-                                / rating_reviews,
-                                "show_recommenders": self.config.get(
-                                    "show_recommenders", False
-                                ),
+                                "would_recommend_perc": supplier_rating["would_recommend"] / rating_reviews,
+                                "show_recommenders": self.config.get("show_recommenders", False),
                                 "option": option,
-                                "load_more_text": self.get_translated_value(
-                                    "load_more_text"
-                                ),
+                                "load_more_text": self.get_translated_value("load_more_text"),
                             }
                         }
                     )
@@ -429,9 +396,7 @@ class AverageOptionsRatingsPlugin(TemplatedPlugin):
                 label=_("Show number of customers that recommend the vendor"),
                 required=False,
                 initial=False,
-                help_text=_(
-                    "Whether to show number of customers that recommend the vendor."
-                ),
+                help_text=_("Whether to show number of customers that recommend the vendor."),
             ),
         ),
     ]
@@ -447,8 +412,7 @@ class AverageOptionsRatingsPlugin(TemplatedPlugin):
                 reviews = supplier_rating["reviews"]
 
                 key, options_ratings = context_cache.get_cached_value(
-                    identifier="vendor_options_ratings_%s"
-                    % (supplier.pk if supplier else ""),
+                    identifier="vendor_options_ratings_%s" % (supplier.pk if supplier else ""),
                     item=get_vendor_options_ratings_cache_item(request.shop),
                     context=request,
                 )
@@ -465,23 +429,16 @@ class AverageOptionsRatingsPlugin(TemplatedPlugin):
                     frac, whole = math.modf(option_rating["average"])
                     option_rating["full_stars"] = int(whole)
                     option_rating["half_stars"] = int(math.ceil(frac))
-                    option_rating["empty_stars"] = (
-                        5 - option_rating["full_stars"] - option_rating["half_stars"]
-                    )
+                    option_rating["empty_stars"] = 5 - option_rating["full_stars"] - option_rating["half_stars"]
 
                 context.update(
                     {
                         "reviews": reviews,
                         "options_ratings": options_ratings,
                         "would_recommend": supplier_rating["would_recommend"],
-                        "would_recommend_perc": supplier_rating["would_recommend"]
-                        / reviews,
-                        "show_recommenders": self.config.get(
-                            "show_recommenders", False
-                        ),
-                        "customer_ratings_title": self.get_translated_value(
-                            "customer_ratings_title"
-                        ),
+                        "would_recommend_perc": supplier_rating["would_recommend"] / reviews,
+                        "show_recommenders": self.config.get("show_recommenders", False),
+                        "customer_ratings_title": self.get_translated_value("customer_ratings_title"),
                     }
                 )
 

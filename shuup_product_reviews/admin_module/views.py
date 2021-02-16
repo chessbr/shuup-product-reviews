@@ -8,9 +8,9 @@
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext_lazy as _
-
 from shuup.admin.shop_provider import get_shop
 from shuup.admin.utils.picotable import Column, TextFilter
+
 from shuup_product_reviews.models import ProductReview
 
 from .base import BaseProductReviewListView
@@ -24,16 +24,13 @@ class ProductReviewListView(BaseProductReviewListView):
         Column(
             "product",
             _("Product"),
-            filter_config=TextFilter(
-                filter_field="product__translations__name",
-                placeholder=_("Filter by product...")
-            )
+            filter_config=TextFilter(filter_field="product__translations__name", placeholder=_("Filter by product...")),
         )
     ] + BaseProductReviewListView.default_columns
 
     mass_actions = [
         "shuup_product_reviews.admin_module.mass_actions.ApproveProductReviewMassAction",
-        "shuup_product_reviews.admin_module.mass_actions.RejectProductReviewMassAction"
+        "shuup_product_reviews.admin_module.mass_actions.RejectProductReviewMassAction",
     ]
 
     def get_queryset(self):

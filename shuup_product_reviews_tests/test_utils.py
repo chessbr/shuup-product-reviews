@@ -6,13 +6,14 @@
 # This source code is licensed under the OSL-3.0 license found in the
 # LICENSE file in the root directory of this source tree.
 import pytest
-
 from shuup import configuration
 from shuup.core.models import OrderStatus, ProductType
 from shuup.testing import factories
+
 from shuup_product_reviews.utils import (
-    get_pending_products_reviews, get_reviews_aggregation_for_product,
-    render_product_review_ratings
+    get_pending_products_reviews,
+    get_reviews_aggregation_for_product,
+    render_product_review_ratings,
 )
 
 from .factories import create_random_review_for_product
@@ -31,14 +32,17 @@ def test_comments_view():
         totals = get_reviews_aggregation_for_product(product)
         rendered = render_product_review_ratings(product)
 
-        expected_rating = """
+        expected_rating = (
+            """
             <span class="rating">
                 %0.1f
                 <span class="sr-only">Rating&nbsp;</span>
             </span>
-        """ % totals["rating"]
+        """
+            % totals["rating"]
+        )
         assert expected_rating in rendered
-        assert '%d reviews' % totals["reviews"] in rendered
+        assert "%d reviews" % totals["reviews"] in rendered
 
         rendered = render_product_review_ratings(product_no_reviews)
         assert rendered == ""

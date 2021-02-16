@@ -13,12 +13,12 @@ from django.shortcuts import reverse
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
-
 from shuup.admin.forms import ShuupAdminForm
 from shuup.admin.shop_provider import get_shop
 from shuup.admin.toolbar import get_default_edit_toolbar
 from shuup.admin.utils.picotable import Column, TextFilter
 from shuup.admin.utils.views import CreateOrUpdateView, PicotableListView
+
 from shuup_product_reviews.admin_module.base import BaseProductReviewListView
 from shuup_vendor_reviews.models import VendorReview, VendorReviewOption
 
@@ -31,16 +31,12 @@ class VendorReviewListView(BaseProductReviewListView):
         Column(
             "supplier",
             _("Vendor"),
-            filter_config=TextFilter(
-                filter_field="supplier__name", placeholder=_("Filter by vendor...")
-            ),
+            filter_config=TextFilter(filter_field="supplier__name", placeholder=_("Filter by vendor...")),
         ),
         Column(
             "option",
             _("Vendor Review Option"),
-            filter_config=TextFilter(
-                filter_field="option__name", placeholder=_("Filter by option...")
-            ),
+            filter_config=TextFilter(filter_field="option__name", placeholder=_("Filter by option...")),
         ),
     ] + BaseProductReviewListView.default_columns
 
@@ -82,9 +78,7 @@ class VendorReviewOptionEditView(CreateOrUpdateView):
         delete_url = None
         option = self.get_object()
         if option and option.pk:
-            delete_url = reverse(
-                "shuup_admin:vendor_reviews_options.delete", kwargs={"pk": option.pk}
-            )
+            delete_url = reverse("shuup_admin:vendor_reviews_options.delete", kwargs={"pk": option.pk})
 
         return get_default_edit_toolbar(self, save_form_id, delete_url=delete_url)
 

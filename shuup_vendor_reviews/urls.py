@@ -9,9 +9,11 @@ from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 
 from shuup_vendor_reviews.views import (
-    VendorReviewCommentsOptionsView, VendorReviewCommentsView,
-    VendorReviewOptionsCommentsView, VendorReviewOptionsView,
-    VendorReviewsView
+    VendorReviewCommentsOptionsView,
+    VendorReviewCommentsView,
+    VendorReviewOptionsCommentsView,
+    VendorReviewOptionsView,
+    VendorReviewsView,
 )
 
 urlpatterns = [

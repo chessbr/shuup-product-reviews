@@ -8,21 +8,17 @@
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext_lazy as _
-
 from shuup.admin.base import AdminModule, MenuEntry
 from shuup.admin.menu import SETTINGS_MENU_CATEGORY, STOREFRONT_MENU_CATEGORY
 from shuup.admin.utils.picotable import Column, TextFilter
-from shuup.admin.utils.urls import (
-    admin_url, derive_model_url, get_edit_and_list_urls
-)
+from shuup.admin.utils.urls import admin_url, derive_model_url, get_edit_and_list_urls
+
 from shuup_vendor_reviews.models import VendorReviewOption
 
 
 class SupplierReviewOptionsModule(AdminModule):
     name = _("Vendor Review Options")
-    breadcrumbs_menu_entry = MenuEntry(
-        name, url="shuup_admin:vendor_reviews_options.list"
-    )
+    breadcrumbs_menu_entry = MenuEntry(name, url="shuup_admin:vendor_reviews_options.list")
 
     default_columns = [
         Column("name", _("Name"), linked=True, filter_config=TextFilter()),
@@ -42,9 +38,7 @@ class SupplierReviewOptionsModule(AdminModule):
         )
 
     def get_model_url(self, object, kind, shop=None):
-        return derive_model_url(
-            VendorReviewOption, "shuup_admin:vendor_reviews_options", object, kind
-        )
+        return derive_model_url(VendorReviewOption, "shuup_admin:vendor_reviews_options", object, kind)
 
     def get_menu_entries(self, request):
         return [

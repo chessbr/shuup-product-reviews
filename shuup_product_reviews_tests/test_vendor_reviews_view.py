@@ -9,7 +9,6 @@ import pytest
 from bs4 import BeautifulSoup
 from django.test.client import Client
 from django.urls import reverse
-
 from shuup.core.models import Supplier
 from shuup.testing import factories
 
@@ -56,7 +55,13 @@ def test_reviews_view_multiple_supplires(rf):
 
     response, soup = client.response_and_soup(reverse("shuup:vendor_reviews"))
     assert "Vendors to Review" in soup.text
-    assert len(soup.findAll("div", attrs={"class": "vendors-to-review"})[0].findChildren(
-        "div", attrs={"class": "list-group-item"})) == 2
+    assert (
+        len(
+            soup.findAll("div", attrs={"class": "vendors-to-review"})[0].findChildren(
+                "div", attrs={"class": "list-group-item"}
+            )
+        )
+        == 2
+    )
     assert "%s" % supplier2_name in soup.text
     assert "%s" % supplier1_name in soup.text

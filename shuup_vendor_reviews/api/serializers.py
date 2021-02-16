@@ -7,8 +7,8 @@
 # LICENSE file in the root directory of this source tree.
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
+from shuup.core.models import Contact, Supplier, get_person_contact
 
-from shuup.core.models import Contact, get_person_contact, Supplier
 from shuup_vendor_reviews.models import VendorReview
 
 
@@ -54,8 +54,6 @@ class ReviewSerializer(serializers.ModelSerializer):
             supplier=data["supplier"], reviewer=data["reviewer"], shop=data["shop"]
         )
         if existing_vendor_review.exists():
-            raise serializers.ValidationError(
-                _("A review for this vendor already exists.")
-            )
+            raise serializers.ValidationError(_("A review for this vendor already exists."))
 
         return super().create(data)

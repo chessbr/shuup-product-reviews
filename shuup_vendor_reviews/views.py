@@ -14,10 +14,10 @@ from django.http.response import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView, View
-
 from shuup.core.models import Supplier
 from shuup.front.views.dashboard import DashboardViewMixin
 from shuup.utils.form_group import FormGroup
+
 from shuup_product_reviews.base import BaseCommentsView
 from shuup_product_reviews.enums import ReviewStatus
 from shuup_vendor_reviews.models import VendorReview, VendorReviewOption
@@ -25,9 +25,7 @@ from shuup_vendor_reviews.utils import get_pending_vendors_reviews
 
 
 class VendorReviewForm(forms.Form):
-    supplier = forms.ModelChoiceField(
-        queryset=Supplier.objects.all(), widget=forms.HiddenInput()
-    )
+    supplier = forms.ModelChoiceField(queryset=Supplier.objects.all(), widget=forms.HiddenInput())
     rating = forms.IntegerField(
         widget=forms.NumberInput(attrs={"class": "rating-input"}),
         max_value=5,
@@ -35,9 +33,7 @@ class VendorReviewForm(forms.Form):
         required=False,
     )
     comment = forms.CharField(required=False, widget=forms.Textarea(attrs=dict(rows=2)))
-    would_recommend = forms.BooleanField(
-        required=False, label=_("I would recommend this to a friend")
-    )
+    would_recommend = forms.BooleanField(required=False, label=_("I would recommend this to a friend"))
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
@@ -68,14 +64,10 @@ class VendorReviewsView(DashboardViewMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(VendorReviewsView, self).get_context_data(**kwargs)
         pending_suppliers_reviews = get_pending_vendors_reviews(self.request)
-        context["reviews"] = VendorReview.objects.for_reviewer(
-            self.request.shop, self.request.person
-        )
+        context["reviews"] = VendorReview.objects.for_reviewer(self.request.shop, self.request.person)
 
         if pending_suppliers_reviews.exists():
-            initial_values = [
-                dict(supplier=supplier) for supplier in pending_suppliers_reviews
-            ]
+            initial_values = [dict(supplier=supplier) for supplier in pending_suppliers_reviews]
             context["reviews_formset"] = VendorReviewModelFormset(
                 form_kwargs=dict(request=self.request), initial=initial_values
             )
@@ -83,9 +75,7 @@ class VendorReviewsView(DashboardViewMixin, TemplateView):
         return context
 
     def post(self, request):
-        formset = VendorReviewModelFormset(
-            request.POST, form_kwargs=dict(request=self.request)
-        )
+        formset = VendorReviewModelFormset(request.POST, form_kwargs=dict(request=self.request))
         if formset.is_valid():
             with atomic():
                 for form in formset.forms:
@@ -98,9 +88,7 @@ class VendorReviewCommentsView(BaseCommentsView):
     view_name = "vendor_review_comments"
 
     def get_reviews_page(self):
-        supplier = Supplier.objects.filter(
-            pk=self.kwargs["pk"], shops=self.request.shop
-        ).first()
+        supplier = Supplier.objects.filter(pk=self.kwargs["pk"], shops=self.request.shop).first()
         queryset = (
             VendorReview.objects.approved()
             .filter(supplier=supplier, shop=self.request.shop, comment__isnull=False)
@@ -119,9 +107,7 @@ class VendorReviewCommentsView(BaseCommentsView):
 
 
 class VendorReviewOptionForm(forms.Form):
-    supplier = forms.ModelChoiceField(
-        queryset=Supplier.objects.all(), widget=forms.HiddenInput()
-    )
+    supplier = forms.ModelChoiceField(queryset=Supplier.objects.all(), widget=forms.HiddenInput())
     rating = forms.IntegerField(
         widget=forms.NumberInput(attrs={"class": "rating-input"}),
         max_value=5,
@@ -129,12 +115,8 @@ class VendorReviewOptionForm(forms.Form):
         required=False,
     )
     comment = forms.CharField(required=False, widget=forms.Textarea(attrs=dict(rows=2)))
-    would_recommend = forms.BooleanField(
-        required=False, label=_("I would recommend this to a friend")
-    )
-    option = forms.ModelChoiceField(
-        queryset=VendorReviewOption.objects.all(), widget=forms.HiddenInput()
-    )
+    would_recommend = forms.BooleanField(required=False, label=_("I would recommend this to a friend"))
+    option = forms.ModelChoiceField(queryset=VendorReviewOption.objects.all(), widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
@@ -210,9 +192,7 @@ class VendorReviewGroupFormset(BaseFormSet):
             form.full_clean()
 
 
-VendorReviewGroupModelFormset = forms.formset_factory(
-    VendorReviewGroupForm, extra=0, formset=VendorReviewGroupFormset
-)
+VendorReviewGroupModelFormset = forms.formset_factory(VendorReviewGroupForm, extra=0, formset=VendorReviewGroupFormset)
 
 
 class VendorReviewOptionsView(DashboardViewMixin, TemplateView):
@@ -221,23 +201,12 @@ class VendorReviewOptionsView(DashboardViewMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(VendorReviewOptionsView, self).get_context_data(**kwargs)
         pending_suppliers_reviews = get_pending_vendors_reviews(self.request)
-        context["reviews"] = VendorReview.objects.for_reviewer(
-            self.request.shop, self.request.person
-        )
-        context["review_dict"] = VendorReview.objects.for_reviewer_dict_options(
-            self.request.shop, self.request.person
-        )
+        context["reviews"] = VendorReview.objects.for_reviewer(self.request.shop, self.request.person)
+        context["review_dict"] = VendorReview.objects.for_reviewer_dict_options(self.request.shop, self.request.person)
 
         if pending_suppliers_reviews.exists():
-            initial_values = [
-                dict(supplier=supplier) for supplier in pending_suppliers_reviews
-            ]
-            options = [
-                option
-                for option in VendorReviewOption.objects.filter(
-                    enabled=True, shop=self.request.shop
-                )
-            ]
+            initial_values = [dict(supplier=supplier) for supplier in pending_suppliers_reviews]
+            options = [option for option in VendorReviewOption.objects.filter(enabled=True, shop=self.request.shop)]
             context["reviews_formset"] = VendorReviewGroupModelFormset(
                 initial=initial_values,
                 form_kwargs=dict(request=self.request, options=options),
@@ -246,15 +215,8 @@ class VendorReviewOptionsView(DashboardViewMixin, TemplateView):
         return context
 
     def post(self, request):
-        options = [
-            option
-            for option in VendorReviewOption.objects.filter(
-                enabled=True, shop=request.shop
-            )
-        ]
-        formset = VendorReviewGroupModelFormset(
-            request.POST, form_kwargs=dict(request=self.request, options=options)
-        )
+        options = [option for option in VendorReviewOption.objects.filter(enabled=True, shop=request.shop)]
+        formset = VendorReviewGroupModelFormset(request.POST, form_kwargs=dict(request=self.request, options=options))
 
         if formset.is_valid():
             with atomic():
@@ -268,9 +230,7 @@ class VendorReviewOptionsCommentsView(BaseCommentsView):
     view_name = "vendor_review_options_comments"
 
     def get_reviews_page(self):
-        supplier = Supplier.objects.filter(
-            pk=self.kwargs["pk"], shops=self.request.shop
-        ).first()
+        supplier = Supplier.objects.filter(pk=self.kwargs["pk"], shops=self.request.shop).first()
         queryset = (
             VendorReview.objects.approved()
             .filter(supplier=supplier, shop=self.request.shop, comment__isnull=False)
@@ -319,9 +279,7 @@ class VendorReviewCommentsOptionsView(View):
         return JsonResponse(payload)
 
     def get_reviews_page(self):
-        supplier = Supplier.objects.filter(
-            pk=self.kwargs["pk"], shops=self.request.shop
-        ).first()
+        supplier = Supplier.objects.filter(pk=self.kwargs["pk"], shops=self.request.shop).first()
         queryset = (
             VendorReview.objects.approved()
             .filter(

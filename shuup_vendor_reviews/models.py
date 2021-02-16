@@ -11,8 +11,8 @@ from django.db.models import Avg, Case, Count, F, Sum, Value, When
 from django.utils.translation import ugettext_lazy as _
 from enumfields import EnumIntegerField
 from parler.models import TranslatableModel, TranslatedFields
-
 from shuup.core.models import Supplier
+
 from shuup_product_reviews.enums import ReviewStatus
 
 
@@ -52,21 +52,15 @@ class VendorReviewQuerySet(models.QuerySet):
 
     def for_reviewer_dict_options(self, shop, reviewer):
         reviews = dict()
-        suppliers = Supplier.objects.enabled().filter(
-            supplier_reviews__reviewer=reviewer
-        )
+        suppliers = Supplier.objects.enabled().filter(supplier_reviews__reviewer=reviewer)
 
         for supplier in suppliers:
-            reviews[supplier] = self.filter(
-                shop=shop, reviewer=reviewer, supplier=supplier
-            )
+            reviews[supplier] = self.filter(shop=shop, reviewer=reviewer, supplier=supplier)
 
         return reviews
 
     def for_reviewer_by_option(self, shop, reviewer, option):
-        return self.filter(shop=shop, reviewer=reviewer, option=option).order_by(
-            "supplier"
-        )
+        return self.filter(shop=shop, reviewer=reviewer, option=option).order_by("supplier")
 
     def options_ratings(self):
 
@@ -134,9 +128,7 @@ class VendorReview(models.Model):
         recalculate_aggregation(self.supplier, self.option)
         from shuup_vendor_reviews.utils import bump_star_rating_cache
 
-        bump_star_rating_cache(
-            self.supplier.pk, (self.option.pk if self.option else "")
-        )
+        bump_star_rating_cache(self.supplier.pk, (self.option.pk if self.option else ""))
 
     def approve(self):
         self.status = ReviewStatus.APPROVED
@@ -154,15 +146,9 @@ class VendorReviewAggregation(models.Model):
         related_name="supplier_reviews_aggregation",
         on_delete=models.CASCADE,
     )
-    rating = models.DecimalField(
-        max_digits=2, decimal_places=1, verbose_name=_("rating"), default=0
-    )
-    review_count = models.PositiveIntegerField(
-        verbose_name=_("review count"), default=0
-    )
-    would_recommend = models.PositiveIntegerField(
-        verbose_name=_("users would recommend"), default=0
-    )
+    rating = models.DecimalField(max_digits=2, decimal_places=1, verbose_name=_("rating"), default=0)
+    review_count = models.PositiveIntegerField(verbose_name=_("review count"), default=0)
+    would_recommend = models.PositiveIntegerField(verbose_name=_("users would recommend"), default=0)
     option = models.ForeignKey(
         VendorReviewOption,
         blank=True,
@@ -205,14 +191,10 @@ def recalculate_aggregation(supplier, option):
         return
 
     reviews_agg = recalculate_aggregation_for_queryset(
-        VendorReview.objects.filter(
-            supplier=supplier, status=ReviewStatus.APPROVED, option=option
-        )
+        VendorReview.objects.filter(supplier=supplier, status=ReviewStatus.APPROVED, option=option)
     )
     if not reviews_agg:
-        aggregation = VendorReviewAggregation.objects.filter(
-            supplier=supplier, option=option
-        ).first()
+        aggregation = VendorReviewAggregation.objects.filter(supplier=supplier, option=option).first()
         if aggregation:
             aggregation.delete()
         return

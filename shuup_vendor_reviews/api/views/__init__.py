@@ -8,11 +8,9 @@
 from rest_framework import filters, mixins, response, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
+from shuup.core.models import Supplier, get_person_contact
 
-from shuup.core.models import get_person_contact, Supplier
-from shuup_vendor_reviews.api.serializers import (
-    ReviewSerializer, VendorReviewSerializer, VendorSerializer
-)
+from shuup_vendor_reviews.api.serializers import ReviewSerializer, VendorReviewSerializer, VendorSerializer
 from shuup_vendor_reviews.models import ReviewStatus, VendorReview
 from shuup_vendor_reviews.utils import get_pending_vendors_reviews
 

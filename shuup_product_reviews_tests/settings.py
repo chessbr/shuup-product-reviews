@@ -11,15 +11,12 @@ import tempfile
 from shuup_workbench.settings.utils import get_disabled_migrations
 from shuup_workbench.test_settings import *  # noqa
 
-INSTALLED_APPS = list(locals().get('INSTALLED_APPS', [])) + [
-    'shuup_product_reviews',
-    'shuup_vendor_reviews'
-]
+INSTALLED_APPS = list(locals().get("INSTALLED_APPS", [])) + ["shuup_product_reviews", "shuup_vendor_reviews"]
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(tempfile.gettempdir(), 'shuup_product_reviews_tests.sqlite3')
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": os.path.join(tempfile.gettempdir(), "shuup_product_reviews_tests.sqlite3"),
     }
 }
 
