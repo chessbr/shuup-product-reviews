@@ -1,3 +1,4 @@
+{% if ratings %}
     {% for option, reviews in ratings.items() %}
         <div class="vendor-review-option-rating">
             <div class="review-option-rating">
@@ -56,3 +57,4 @@
             </div>
         </div>
     {% endfor %}
+{% endif %}

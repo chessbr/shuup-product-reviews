@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Enter here all the changes made to the development version
 
+### Changed
+
+- Align review option using CSS instead of bs3 class
+
+### Fixed
+
+- Do not break when there is no review option selected
+
 ## [1.1.0] - 2021-02-16
 
 ### Added
