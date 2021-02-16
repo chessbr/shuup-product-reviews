@@ -15,7 +15,7 @@ class AppConfig(shuup.apps.AppConfig):
     provides = {
         "admin_module": [
             "shuup_vendor_reviews.admin_module.SupplierReviewsModule",
-            "shuup_vendor_reviews.admin_module.SupplierReviewOptionsModule"
+            "shuup_vendor_reviews.admin_module.SupplierReviewOptionsModule",
         ],
         "admin_shop_form_part": [
             "shuup_vendor_reviews.admin_module.dashboard.VendorReviewsSettingsFormPart",
@@ -27,25 +27,18 @@ class AppConfig(shuup.apps.AppConfig):
             "shuup_vendor_reviews.plugins.VendorReviewOptionStarRatingsPlugin",
             "shuup_vendor_reviews.plugins.VendorReviewOptionCommentsPlugin",
             "shuup_vendor_reviews.plugins.VendorReviewOptionTabs",
-            ],
+            "shuup_vendor_reviews.plugins.AverageOptionsRatingsPlugin",
+        ],
         "customer_dashboard_items": [
             "shuup_vendor_reviews.dashboard_items:VendorReviewDashboardItem",
-            "shuup_vendor_reviews.dashboard_items:VendorReviewWithOptionsDashboardItem"
+            "shuup_vendor_reviews.dashboard_items:VendorReviewWithOptionsDashboardItem",
         ],
-        "front_urls": [
-            "shuup_vendor_reviews.urls:urlpatterns"
-        ],
-        "xtheme_resource_injection": [
-            "shuup_vendor_reviews.resources:add_resources"
-        ],
-        "notify_event": [
-            "shuup_vendor_reviews.notify_events.VendorReviewCreated"
-        ],
-        "api_populator": [
-            "shuup_vendor_reviews.api.populate_api"
-        ]
+        "front_urls": ["shuup_vendor_reviews.urls:urlpatterns"],
+        "xtheme_resource_injection": ["shuup_vendor_reviews.resources:add_resources"],
+        "notify_event": ["shuup_vendor_reviews.notify_events.VendorReviewCreated"],
+        "api_populator": ["shuup_vendor_reviews.api.populate_api"],
     }
 
     def ready(self):
         # connect signals
-        import shuup_vendor_reviews.signal_handlers    # noqa (C901)
+        import shuup_vendor_reviews.signal_handlers  # noqa (C901)

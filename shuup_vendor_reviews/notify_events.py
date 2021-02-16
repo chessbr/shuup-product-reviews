@@ -6,7 +6,6 @@
 # This source code is licensed under the OSL-3.0 license found in the
 # LICENSE file in the root directory of this source tree.
 from django.utils.translation import ugettext_lazy as _
-
 from shuup.notify.base import Event, Variable
 from shuup.notify.typology import Email, Model, Phone
 
@@ -30,10 +29,8 @@ def send_vendor_review_created_notification(vendor_review):
 
     params = dict(
         vendor_review=vendor_review,
-
         reviewer_email=reviewer.email,
         reviewer_phone=reviewer.phone,
-
         shop_email=shop.contact_address.email if shop.contact_address else "",
         shop_phone=shop.contact_address.phone if shop.contact_address else "",
     )

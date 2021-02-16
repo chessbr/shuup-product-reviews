@@ -7,8 +7,8 @@
 # LICENSE file in the root directory of this source tree.
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
+from shuup.core.models import Contact, Supplier, get_person_contact
 
-from shuup.core.models import Contact, get_person_contact, Supplier
 from shuup_vendor_reviews.models import VendorReview
 
 
@@ -36,14 +36,12 @@ class ReviewSerializer(serializers.ModelSerializer):
     supplier = VendorSerializer(read_only=True)
     reviewer = ReviewerSerializer(read_only=True)
     destination = serializers.PrimaryKeyRelatedField(
-        write_only=True,
-        source="supplier",
-        queryset=Supplier.objects.enabled()
+        write_only=True, source="supplier", queryset=Supplier.objects.enabled()
     )
 
     class Meta:
         model = VendorReview
-        exclude = ("shop", )
+        exclude = ("shop",)
         extra_kwargs = dict(
             status=dict(read_only=True),
         )
@@ -53,9 +51,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         data["reviewer"] = get_person_contact(self.context["request"].user)
 
         existing_vendor_review = VendorReview.objects.filter(
-            supplier=data["supplier"],
-            reviewer=data["reviewer"],
-            shop=data["shop"]
+            supplier=data["supplier"], reviewer=data["reviewer"], shop=data["shop"]
         )
         if existing_vendor_review.exists():
             raise serializers.ValidationError(_("A review for this vendor already exists."))

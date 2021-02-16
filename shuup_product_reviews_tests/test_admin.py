@@ -10,11 +10,12 @@ import json
 import pytest
 from django.test.client import Client
 from django.urls import reverse
-
 from shuup.testing import factories
 from shuup.testing.utils import apply_request_middleware
+
 from shuup_product_reviews.admin_module.mass_actions import (
-    ApproveProductReviewMassAction, RejectProductReviewMassAction
+    ApproveProductReviewMassAction,
+    RejectProductReviewMassAction,
 )
 from shuup_product_reviews.models import ProductReview, ReviewStatus
 

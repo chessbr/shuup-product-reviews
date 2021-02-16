@@ -8,11 +8,9 @@
 from rest_framework import filters, mixins, response, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
+from shuup.core.models import Supplier, get_person_contact
 
-from shuup.core.models import get_person_contact, Supplier
-from shuup_vendor_reviews.api.serializers import (
-    ReviewSerializer, VendorReviewSerializer, VendorSerializer
-)
+from shuup_vendor_reviews.api.serializers import ReviewSerializer, VendorReviewSerializer, VendorSerializer
 from shuup_vendor_reviews.models import ReviewStatus, VendorReview
 from shuup_vendor_reviews.utils import get_pending_vendors_reviews
 
@@ -21,6 +19,7 @@ class VendorReviewsViewSet(viewsets.GenericViewSet):
     """
     List all reviews from a given vendor
     """
+
     queryset = VendorReview.objects.none()
     serializer_class = VendorReviewSerializer
 
@@ -28,7 +27,7 @@ class VendorReviewsViewSet(viewsets.GenericViewSet):
         return VendorReview.objects.filter(
             shop=self.request.shop,
             supplier=self.get_object(),
-            status=ReviewStatus.APPROVED
+            status=ReviewStatus.APPROVED,
         ).order_by("-created_on")
 
     def retrieve(self, request, *args, **kwargs):
@@ -60,13 +59,16 @@ class ReviewFilters(filters.BaseFilterBackend):
         return queryset
 
 
-class ReviewViewSet(mixins.ListModelMixin,
-                    mixins.CreateModelMixin,
-                    mixins.UpdateModelMixin,
-                    viewsets.GenericViewSet):
+class ReviewViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
+):
     """
     Create, update and list reviews posted by the current authenticated user
     """
+
     queryset = VendorReview.objects.none()
     serializer_class = ReviewSerializer
     filter_backends = (ReviewFilters,)
@@ -76,8 +78,7 @@ class ReviewViewSet(mixins.ListModelMixin,
             return self.queryset
 
         vendor_reviews = VendorReview.objects.filter(
-            shop=self.request.shop,
-            reviewer=get_person_contact(self.request.user)
+            shop=self.request.shop, reviewer=get_person_contact(self.request.user)
         )
 
         if self.action == "pending":

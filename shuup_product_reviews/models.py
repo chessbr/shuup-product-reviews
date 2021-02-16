@@ -24,22 +24,25 @@ class ProductReviewQuerySet(QuerySet):
 
 class ProductReview(models.Model):
     shop = models.ForeignKey(
-        "shuup.Shop", verbose_name=_("shop"), related_name="product_reviews", on_delete=models.CASCADE)
+        "shuup.Shop", verbose_name=_("shop"), related_name="product_reviews", on_delete=models.CASCADE
+    )
     product = models.ForeignKey(
-        "shuup.Product", verbose_name=_("product"), related_name="product_reviews", on_delete=models.CASCADE)
+        "shuup.Product", verbose_name=_("product"), related_name="product_reviews", on_delete=models.CASCADE
+    )
     reviewer = models.ForeignKey(
-        "shuup.Contact", verbose_name=_("reviewer"), related_name="product_reviews", on_delete=models.CASCADE)
+        "shuup.Contact", verbose_name=_("reviewer"), related_name="product_reviews", on_delete=models.CASCADE
+    )
     order = models.ForeignKey(
-        "shuup.Order", verbose_name=_("order"), related_name="product_reviews", on_delete=models.CASCADE)
+        "shuup.Order", verbose_name=_("order"), related_name="product_reviews", on_delete=models.CASCADE
+    )
     rating = models.PositiveIntegerField(
-        verbose_name=_("rating"),
-        validators=[MaxValueValidator(5), MinValueValidator(1)]
+        verbose_name=_("rating"), validators=[MaxValueValidator(5), MinValueValidator(1)]
     )
     comment = models.TextField(blank=True, null=True, verbose_name=_("comment"))
     would_recommend = models.BooleanField(
         default=False,
         verbose_name=_("Would recommend to a friend?"),
-        help_text=_("Indicates whether you would recommend this product to a friend.")
+        help_text=_("Indicates whether you would recommend this product to a friend."),
     )
     status = EnumIntegerField(ReviewStatus, db_index=True, default=ReviewStatus.PENDING)
     created_on = models.DateTimeField(auto_now_add=True, db_index=True)
@@ -49,14 +52,14 @@ class ProductReview(models.Model):
 
     def __str__(self):
         return _("Review for {product} by {reviewer_name}").format(
-            product=self.product,
-            reviewer_name=self.reviewer.name
+            product=self.product, reviewer_name=self.reviewer.name
         )
 
     def save(self, *args, **kwargs):
         super(ProductReview, self).save(*args, **kwargs)
         recalculate_aggregation(self.product)
         from shuup_product_reviews.utils import bump_star_rating_cache
+
         bump_star_rating_cache(self.product.pk)
 
     def approve(self):
@@ -70,10 +73,7 @@ class ProductReview(models.Model):
 
 class ProductReviewAggregation(models.Model):
     product = models.OneToOneField(
-        "shuup.Product",
-        verbose_name=_("product"),
-        related_name="product_reviews_aggregation",
-        on_delete=models.CASCADE
+        "shuup.Product", verbose_name=_("product"), related_name="product_reviews_aggregation", on_delete=models.CASCADE
     )
     rating = models.DecimalField(max_digits=2, decimal_places=1, verbose_name=_("rating"), default=0)
     review_count = models.PositiveIntegerField(verbose_name=_("review count"), default=0)
@@ -93,9 +93,9 @@ def recalculate_aggregation_for_queryset(queryset):
                 When(would_recommend=True, then=Value(1)),
                 When(would_recommend=False, then=Value(0)),
                 default=Value(0),
-                output_field=models.PositiveIntegerField()
+                output_field=models.PositiveIntegerField(),
             )
-        )
+        ),
     )
 
 
@@ -109,8 +109,11 @@ def recalculate_aggregation(product):
             aggregation.delete()
         return
 
-    ProductReviewAggregation.objects.update_or_create(product=product, defaults=dict(
-        review_count=reviews_agg["count"],
-        rating=reviews_agg["rating"],
-        would_recommend=reviews_agg["would_recommend"]
-    ))
+    ProductReviewAggregation.objects.update_or_create(
+        product=product,
+        defaults=dict(
+            review_count=reviews_agg["count"],
+            rating=reviews_agg["rating"],
+            would_recommend=reviews_agg["would_recommend"],
+        ),
+    )

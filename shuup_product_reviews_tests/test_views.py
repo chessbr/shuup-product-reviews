@@ -14,14 +14,10 @@ from django.conf import settings
 from django.test.client import Client
 from django.urls import reverse
 from faker import Faker
-
 from shuup.testing import factories
 from shuup.testing.soup_utils import extract_form_fields
 
-from .factories import (
-    create_random_order_to_review, create_random_review_for_product,
-    create_random_review_for_reviwer
-)
+from .factories import create_random_order_to_review, create_random_review_for_product, create_random_review_for_reviwer
 
 
 class SmartClient(Client):

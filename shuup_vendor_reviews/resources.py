@@ -28,5 +28,5 @@ def add_resources(context, content):
     add_resource(
         context,
         "body_end",
-        get_shuup_static_url("shuup_vendor_reviews/shuup_vendor_reviews.js", "shuup-vendor-reviews")
+        get_shuup_static_url("shuup_vendor_reviews/shuup_vendor_reviews.js", "shuup-vendor-reviews"),
     )

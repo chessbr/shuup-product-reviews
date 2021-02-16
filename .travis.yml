@@ -14,8 +14,9 @@ install:
   - pip install codecov
   - pip install -r requirements-test.txt
 script:
-  - flake8
-  - isort --check-only
+  - black --check --diff .
+  - flake8 .
+  - isort --check --diff .
   - py.test -ra -vvv --nomigrations --cov shuup_product_reviews shuup_product_reviews_tests/
 after_success:
   - codecov

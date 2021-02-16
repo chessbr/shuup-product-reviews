@@ -19,10 +19,10 @@ def add_resources(context, content):
     add_resource(
         context,
         "head_end",
-        get_shuup_static_url("shuup_product_reviews/shuup_product_reviews.css", "shuup-product-reviews")
+        get_shuup_static_url("shuup_product_reviews/shuup_product_reviews.css", "shuup-product-reviews"),
     )
     add_resource(
         context,
         "body_end",
-        get_shuup_static_url("shuup_product_reviews/shuup_product_reviews.js", "shuup-product-reviews")
+        get_shuup_static_url("shuup_product_reviews/shuup_product_reviews.js", "shuup-product-reviews"),
     )

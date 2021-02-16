@@ -8,24 +8,19 @@
 import pytest
 from django.test.client import Client
 from django.urls import reverse
-
 from shuup.testing import factories
 from shuup.themes.classic_gray.theme import ClassicGrayTheme
 from shuup.xtheme._theme import get_current_theme, set_current_theme
 from shuup.xtheme.layout import Layout
 from shuup.xtheme.models import SavedViewConfig, SavedViewConfigStatus
-from shuup_product_reviews.plugins import (
-    ProductReviewCommentsPlugin, ProductReviewStarRatingsPlugin
-)
+
+from shuup_product_reviews.plugins import ProductReviewCommentsPlugin, ProductReviewStarRatingsPlugin
 
 from .factories import create_random_review_for_product
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("show_recommenders,title", [
-    (True, "My Title Here"),
-    (False, "A new life")
-])
+@pytest.mark.parametrize("show_recommenders,title", [(True, "My Title Here"), (False, "A new life")])
 def test_ratings_plugin(show_recommenders, title):
     shop = factories.get_default_shop()
     product = factories.create_product("product", shop=shop, supplier=factories.get_default_supplier())
@@ -38,15 +33,13 @@ def test_ratings_plugin(show_recommenders, title):
         theme_identifier=ClassicGrayTheme.identifier,
         shop=shop,
         view_name="ProductDetailView",
-        status=SavedViewConfigStatus.CURRENT_DRAFT
+        status=SavedViewConfigStatus.CURRENT_DRAFT,
     )
     layout = Layout(get_current_theme(shop), "product_extra_2")
-    layout.add_plugin(ProductReviewStarRatingsPlugin.identifier, {
-        "customer_ratings_title": {
-            "en": title
-        },
-        "show_recommenders": show_recommenders
-    })
+    layout.add_plugin(
+        ProductReviewStarRatingsPlugin.identifier,
+        {"customer_ratings_title": {"en": title}, "show_recommenders": show_recommenders},
+    )
     svc.set_layout_data(layout.placeholder_name, layout)
     svc.save()
     svc.publish()
@@ -77,14 +70,10 @@ def test_comments_plugin(title):
         theme_identifier=ClassicGrayTheme.identifier,
         shop=shop,
         view_name="ProductDetailView",
-        status=SavedViewConfigStatus.CURRENT_DRAFT
+        status=SavedViewConfigStatus.CURRENT_DRAFT,
     )
     layout = Layout(get_current_theme(shop), "product_bottom")
-    layout.add_plugin(ProductReviewCommentsPlugin.identifier, {
-        "title": {
-            "en": title
-        }
-    })
+    layout.add_plugin(ProductReviewCommentsPlugin.identifier, {"title": {"en": title}})
     svc.set_layout_data(layout.placeholder_name, layout)
     svc.save()
     svc.publish()
@@ -96,5 +85,5 @@ def test_comments_plugin(title):
     content = response.content.decode("utf-8")
 
     assert "product-review-comments" in content
-    assert 'data-url="%s"' % reverse('shuup:product_review_comments', kwargs=dict(pk=product.pk)) in content
+    assert 'data-url="%s"' % reverse("shuup:product_review_comments", kwargs=dict(pk=product.pk)) in content
     assert 'data-title="%s"' % title in content

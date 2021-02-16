@@ -14,10 +14,10 @@ from django.http.response import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView, View
-
 from shuup.core.models import Supplier
 from shuup.front.views.dashboard import DashboardViewMixin
 from shuup.utils.form_group import FormGroup
+
 from shuup_product_reviews.base import BaseCommentsView
 from shuup_product_reviews.enums import ReviewStatus
 from shuup_vendor_reviews.models import VendorReview, VendorReviewOption
@@ -30,7 +30,7 @@ class VendorReviewForm(forms.Form):
         widget=forms.NumberInput(attrs={"class": "rating-input"}),
         max_value=5,
         min_value=1,
-        required=False
+        required=False,
     )
     comment = forms.CharField(required=False, widget=forms.Textarea(attrs=dict(rows=2)))
     would_recommend = forms.BooleanField(required=False, label=_("I would recommend this to a friend"))
@@ -50,8 +50,8 @@ class VendorReviewForm(forms.Form):
                     rating=data["rating"],
                     comment=data["comment"],
                     would_recommend=data["would_recommend"],
-                    status=ReviewStatus.PENDING
-                )
+                    status=ReviewStatus.PENDING,
+                ),
             )
 
 
@@ -67,13 +67,9 @@ class VendorReviewsView(DashboardViewMixin, TemplateView):
         context["reviews"] = VendorReview.objects.for_reviewer(self.request.shop, self.request.person)
 
         if pending_suppliers_reviews.exists():
-            initial_values = [
-                dict(supplier=supplier)
-                for supplier in pending_suppliers_reviews
-            ]
+            initial_values = [dict(supplier=supplier) for supplier in pending_suppliers_reviews]
             context["reviews_formset"] = VendorReviewModelFormset(
-                form_kwargs=dict(request=self.request),
-                initial=initial_values
+                form_kwargs=dict(request=self.request), initial=initial_values
             )
 
         return context
@@ -93,12 +89,14 @@ class VendorReviewCommentsView(BaseCommentsView):
 
     def get_reviews_page(self):
         supplier = Supplier.objects.filter(pk=self.kwargs["pk"], shops=self.request.shop).first()
-        queryset = VendorReview.objects.approved().filter(
-            supplier=supplier, shop=self.request.shop, comment__isnull=False
-        ).order_by("-created_on")
+        queryset = (
+            VendorReview.objects.approved()
+            .filter(supplier=supplier, shop=self.request.shop, comment__isnull=False)
+            .order_by("-created_on")
+        )
 
         paginator = Paginator(queryset, settings.VENDOR_REVIEWS_PAGE_SIZE)
-        page = self.request.GET.get('page')
+        page = self.request.GET.get("page")
 
         try:
             return paginator.page(page)
@@ -114,7 +112,7 @@ class VendorReviewOptionForm(forms.Form):
         widget=forms.NumberInput(attrs={"class": "rating-input"}),
         max_value=5,
         min_value=1,
-        required=False
+        required=False,
     )
     comment = forms.CharField(required=False, widget=forms.Textarea(attrs=dict(rows=2)))
     would_recommend = forms.BooleanField(required=False, label=_("I would recommend this to a friend"))
@@ -125,9 +123,7 @@ class VendorReviewOptionForm(forms.Form):
         self.option = kwargs.pop("option")
         self.supplier = kwargs.pop("supplier")
         review = VendorReview.objects.filter(
-            reviewer=self.request.person,
-            supplier=self.supplier,
-            option=self.option
+            reviewer=self.request.person, supplier=self.supplier, option=self.option
         ).first()
 
         super(VendorReviewOptionForm, self).__init__(*args, **kwargs)
@@ -156,7 +152,7 @@ class VendorReviewOptionForm(forms.Form):
                     comment=data["comment"],
                     would_recommend=data["would_recommend"],
                     status=ReviewStatus.PENDING,
-                )
+                ),
             )
 
 
@@ -181,8 +177,8 @@ class VendorReviewGroupForm(FormGroup):
                 kwargs={
                     "request": self.request,
                     "option": option,
-                    "supplier": self.supplier
-                }
+                    "supplier": self.supplier,
+                },
             )
 
     def save(self, **kwargs):
@@ -209,10 +205,7 @@ class VendorReviewOptionsView(DashboardViewMixin, TemplateView):
         context["review_dict"] = VendorReview.objects.for_reviewer_dict_options(self.request.shop, self.request.person)
 
         if pending_suppliers_reviews.exists():
-            initial_values = [
-                dict(supplier=supplier)
-                for supplier in pending_suppliers_reviews
-            ]
+            initial_values = [dict(supplier=supplier) for supplier in pending_suppliers_reviews]
             options = [option for option in VendorReviewOption.objects.filter(enabled=True, shop=self.request.shop)]
             context["reviews_formset"] = VendorReviewGroupModelFormset(
                 initial=initial_values,
@@ -238,12 +231,14 @@ class VendorReviewOptionsCommentsView(BaseCommentsView):
 
     def get_reviews_page(self):
         supplier = Supplier.objects.filter(pk=self.kwargs["pk"], shops=self.request.shop).first()
-        queryset = VendorReview.objects.approved().filter(
-            supplier=supplier, shop=self.request.shop, comment__isnull=False
-        ).order_by("-created_on")
+        queryset = (
+            VendorReview.objects.approved()
+            .filter(supplier=supplier, shop=self.request.shop, comment__isnull=False)
+            .order_by("-created_on")
+        )
 
         paginator = Paginator(queryset, settings.VENDOR_REVIEWS_PAGE_SIZE)
-        page = self.request.GET.get('page')
+        page = self.request.GET.get("page")
 
         try:
             return paginator.page(page)
@@ -265,7 +260,7 @@ class VendorReviewCommentsOptionsView(View):
                 "rating": review.rating,
                 "comment": review.comment,
                 "reviewer": review.reviewer.name,
-                "option": review.option.pk
+                "option": review.option.pk,
             }
             for review in page.object_list
         ]
@@ -273,8 +268,8 @@ class VendorReviewCommentsOptionsView(View):
         next_page_url = None
         if page.has_next():
             next_page_url = "{}?page={}".format(
-                reverse('shuup:%s' % self.view_name, kwargs=dict(pk=self.kwargs["pk"])),
-                page.number + 1
+                reverse("shuup:%s" % self.view_name, kwargs=dict(pk=self.kwargs["pk"])),
+                page.number + 1,
             )
 
         payload = {
@@ -285,12 +280,19 @@ class VendorReviewCommentsOptionsView(View):
 
     def get_reviews_page(self):
         supplier = Supplier.objects.filter(pk=self.kwargs["pk"], shops=self.request.shop).first()
-        queryset = VendorReview.objects.approved().filter(
-            supplier=supplier, shop=self.request.shop, comment__isnull=False, option_id=self.kwargs["option"]
-        ).order_by("-created_on")
+        queryset = (
+            VendorReview.objects.approved()
+            .filter(
+                supplier=supplier,
+                shop=self.request.shop,
+                comment__isnull=False,
+                option_id=self.kwargs["option"],
+            )
+            .order_by("-created_on")
+        )
 
         paginator = Paginator(queryset, settings.VENDOR_REVIEWS_PAGE_SIZE)
-        page = self.request.GET.get('page')
+        page = self.request.GET.get("page")
 
         try:
             return paginator.page(page)

@@ -13,5 +13,6 @@ def populate_api(router):
     :type router: rest_framework.routers.DefaultRouter
     """
     from shuup_vendor_reviews.api.views import ReviewViewSet, VendorReviewsViewSet
+
     router.register("vendor-review/review", ReviewViewSet)
     router.register("vendor-review/reviews", VendorReviewsViewSet)

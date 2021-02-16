@@ -8,7 +8,6 @@
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext_lazy as _
-
 from shuup.admin.base import AdminModule, MenuEntry
 from shuup.admin.menu import PRODUCTS_MENU_CATEGORY
 from shuup.admin.utils.urls import admin_url
@@ -23,13 +22,13 @@ class ProductReviewsModule(AdminModule):
             admin_url(
                 r"^product_reviews/$",
                 "shuup_product_reviews.admin_module.views.ProductReviewListView",
-                name="product_reviews.list"
+                name="product_reviews.list",
             ),
             admin_url(
                 r"^product_reviews/list-settings/",
                 "shuup.admin.modules.settings.views.ListSettingsView",
-                name="product_reviews.list_settings"
-            )
+                name="product_reviews.list_settings",
+            ),
         ]
 
     def get_menu_entries(self, request):
@@ -40,6 +39,6 @@ class ProductReviewsModule(AdminModule):
                 url="shuup_admin:product_reviews.list",
                 category=PRODUCTS_MENU_CATEGORY,
                 subcategory="products",
-                ordering=5
+                ordering=5,
             )
         ]

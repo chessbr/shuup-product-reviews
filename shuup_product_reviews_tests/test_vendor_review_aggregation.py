@@ -6,15 +6,13 @@
 # This source code is licensed under the OSL-3.0 license found in the
 # LICENSE file in the root directory of this source tree.
 import pytest
-
 from shuup.core.models import Supplier
 from shuup.testing import factories
+
 from shuup_vendor_reviews.models import VendorReview
 from shuup_vendor_reviews.utils import get_reviews_aggregation_for_supplier
 
-from .factories import (
-    create_multi_supplier_order_to_review, create_vendor_review_for_order_line
-)
+from .factories import create_multi_supplier_order_to_review, create_vendor_review_for_order_line
 
 
 @pytest.mark.django_db
@@ -45,14 +43,12 @@ def test_rejecting_all_reviews_multiple_suppliers():
     order1 = create_multi_supplier_order_to_review(shop_product, customer)
     assert order1.lines.count() == 5
     for identifier, name, rating1, rating2 in suppliers:
-        create_vendor_review_for_order_line(
-            order1.lines.filter(supplier__identifier=identifier).first(), rating1)
+        create_vendor_review_for_order_line(order1.lines.filter(supplier__identifier=identifier).first(), rating1)
 
     order2 = create_multi_supplier_order_to_review(shop_product, customer)
     assert order1.lines.count() == 5
     for identifier, name, rating1, rating2 in suppliers:
-        create_vendor_review_for_order_line(
-            order2.lines.filter(supplier__identifier=identifier).first(), rating2)
+        create_vendor_review_for_order_line(order2.lines.filter(supplier__identifier=identifier).first(), rating2)
 
     assert VendorReview.objects.count() == 10
     for identifier, name, rating1, rating2 in suppliers:

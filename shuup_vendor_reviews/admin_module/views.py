@@ -13,12 +13,12 @@ from django.shortcuts import reverse
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
-
 from shuup.admin.forms import ShuupAdminForm
 from shuup.admin.shop_provider import get_shop
 from shuup.admin.toolbar import get_default_edit_toolbar
 from shuup.admin.utils.picotable import Column, TextFilter
 from shuup.admin.utils.views import CreateOrUpdateView, PicotableListView
+
 from shuup_product_reviews.admin_module.base import BaseProductReviewListView
 from shuup_vendor_reviews.models import VendorReview, VendorReviewOption
 
@@ -31,24 +31,18 @@ class VendorReviewListView(BaseProductReviewListView):
         Column(
             "supplier",
             _("Vendor"),
-            filter_config=TextFilter(
-                filter_field="supplier__name",
-                placeholder=_("Filter by vendor...")
-            )
+            filter_config=TextFilter(filter_field="supplier__name", placeholder=_("Filter by vendor...")),
         ),
         Column(
             "option",
             _("Vendor Review Option"),
-            filter_config=TextFilter(
-                filter_field="option__name",
-                placeholder=_("Filter by option...")
-            )
-        )
+            filter_config=TextFilter(filter_field="option__name", placeholder=_("Filter by option...")),
+        ),
     ] + BaseProductReviewListView.default_columns
 
     mass_actions = [
         "shuup_vendor_reviews.admin_module.mass_actions.ApproveVendorReviewMassAction",
-        "shuup_vendor_reviews.admin_module.mass_actions.RejectVendorReviewMassAction"
+        "shuup_vendor_reviews.admin_module.mass_actions.RejectVendorReviewMassAction",
     ]
 
     def get_queryset(self):
@@ -59,7 +53,7 @@ class VendorReviewOptionListView(PicotableListView):
     model = VendorReviewOption
 
     default_columns = [
-        Column("name", _(u"Name"), linked=True, filter_config=TextFilter()),
+        Column("name", _("Name"), linked=True, filter_config=TextFilter()),
     ]
 
     def get_queryset(self):
@@ -69,7 +63,7 @@ class VendorReviewOptionListView(PicotableListView):
 class VendorReviewOptionForm(ShuupAdminForm):
     class Meta:
         model = VendorReviewOption
-        exclude = ('shop',)
+        exclude = ("shop",)
 
 
 class VendorReviewOptionEditView(CreateOrUpdateView):
@@ -107,5 +101,5 @@ class VendorReviewOptionDeleteView(DetailView):
         option = self.get_object()
         name = force_text(option)
         option.delete()
-        messages.success(request, _(u"%s has been deleted.") % name)
+        messages.success(request, _("%s has been deleted.") % name)
         return HttpResponseRedirect(reverse("shuup_admin:vendor_reviews_options.list"))

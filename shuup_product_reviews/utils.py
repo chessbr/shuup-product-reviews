@@ -8,17 +8,17 @@
 import math
 
 from django.db.models import Avg, Sum
-
 from shuup import configuration
 from shuup.core import cache
-from shuup.core.models import get_person_contact, Order, Product, ProductMode
+from shuup.core.models import Order, Product, ProductMode, get_person_contact
+
 from shuup_product_reviews.models import ProductReviewAggregation
 
 ACCEPTED_PRODUCT_MODES = [
     ProductMode.NORMAL,
     ProductMode.SIMPLE_VARIATION_PARENT,
     ProductMode.VARIABLE_VARIATION_PARENT,
-    ProductMode.VARIATION_CHILD
+    ProductMode.VARIATION_CHILD,
 ]
 
 
@@ -33,11 +33,9 @@ def get_orders_for_review(request):
     """
     return Order.objects.paid().filter(
         shop=request.shop,
-        customer__in=set([
-            customer
-            for customer in [get_person_contact(request.user), request.customer, request.person]
-            if customer
-        ])
+        customer__in=set(
+            [customer for customer in [get_person_contact(request.user), request.customer, request.person] if customer]
+        ),
     )
 
 
@@ -48,10 +46,14 @@ def get_pending_products_reviews(request):
     """
     ignored_product_types = get_ignored_product_types_ids(request.shop)
 
-    products = Product.objects.all_except_deleted(shop=request.shop).filter(
-        order_lines__order__in=get_orders_for_review(request),
-        mode__in=[ProductMode.NORMAL, ProductMode.VARIATION_CHILD]
-    ).distinct()
+    products = (
+        Product.objects.all_except_deleted(shop=request.shop)
+        .filter(
+            order_lines__order__in=get_orders_for_review(request),
+            mode__in=[ProductMode.NORMAL, ProductMode.VARIATION_CHILD],
+        )
+        .distinct()
+    )
 
     if ignored_product_types:
         products = products.exclude(type__in=ignored_product_types)
@@ -72,9 +74,7 @@ def get_reviews_aggregation_for_product(product):
     """
     product_ids = [product.pk] + list(product.variation_children.values_list("pk", flat=True))
     return ProductReviewAggregation.objects.filter(product_id__in=product_ids).aggregate(
-        rating=Avg("rating"),
-        reviews=Sum("review_count"),
-        would_recommend=Sum("would_recommend")
+        rating=Avg("rating"), reviews=Sum("review_count"), would_recommend=Sum("would_recommend")
     )
 
 
@@ -113,9 +113,10 @@ def render_product_review_ratings(product, customer_ratings_title=None, show_rec
                 "rating": rating,
                 "customer_ratings_title": customer_ratings_title,
                 "show_recommenders": show_recommenders,
-                "minified": minified
+                "minified": minified,
             }
             from django.template import loader
+
             star_rating = loader.render_to_string("shuup_product_reviews/plugins/star_rating.jinja", context=context)
 
         # -1 is a flag that indicates that there is no content to render

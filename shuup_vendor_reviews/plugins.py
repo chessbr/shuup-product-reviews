@@ -7,18 +7,21 @@
 # LICENSE file in the root directory of this source tree.
 from __future__ import unicode_literals
 
-from django import forms
-from django.utils.translation import ugettext_lazy as _
+import math
 
+from django import forms
+from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
+from shuup.core.utils import context_cache
 from shuup.xtheme import TemplatedPlugin
 from shuup.xtheme.plugins.forms import GenericPluginForm, TranslatableField
-from shuup.xtheme.plugins.widgets import (
-    XThemeSelect2ModelChoiceField, XThemeSelect2ModelMultipleChoiceField
-)
+from shuup.xtheme.plugins.widgets import XThemeSelect2ModelChoiceField, XThemeSelect2ModelMultipleChoiceField
+
 from shuup_vendor_reviews.models import VendorReview, VendorReviewOption
 from shuup_vendor_reviews.utils import (
     get_reviews_aggregation_for_supplier,
-    get_reviews_aggregation_for_supplier_by_option, get_stars_from_rating
+    get_reviews_aggregation_for_supplier_by_option,
+    get_stars_from_rating,
 )
 
 
@@ -29,17 +32,23 @@ class VendorReviewStarRatingsPlugin(TemplatedPlugin):
     required_context_variables = ["supplier"]
 
     fields = [
-        ("customer_ratings_title", TranslatableField(
-            label=_("Customer ratings title"),
-            required=False,
-            initial=_("Customer Ratings:")
-        )),
-        ("show_recommenders", forms.BooleanField(
-            label=_("Show number of customers that recommend the vendor"),
-            required=False,
-            initial=False,
-            help_text=_("Whether to show number of customers that recommend the vendor.")
-        ))
+        (
+            "customer_ratings_title",
+            TranslatableField(
+                label=_("Customer ratings title"),
+                required=False,
+                initial=_("Customer Ratings:"),
+            ),
+        ),
+        (
+            "show_recommenders",
+            forms.BooleanField(
+                label=_("Show number of customers that recommend the vendor"),
+                required=False,
+                initial=False,
+                help_text=_("Whether to show number of customers that recommend the vendor."),
+            ),
+        ),
     ]
 
     def get_context_data(self, context):
@@ -52,17 +61,19 @@ class VendorReviewStarRatingsPlugin(TemplatedPlugin):
                 rating = supplier_rating["rating"]
                 reviews = supplier_rating["reviews"]
                 (full_stars, empty_stars, half_star) = get_stars_from_rating(rating)
-                context.update({
-                    "half_star": half_star,
-                    "full_stars": full_stars,
-                    "empty_stars": empty_stars,
-                    "reviews": reviews,
-                    "rating": rating,
-                    "would_recommend": supplier_rating["would_recommend"],
-                    "would_recommend_perc": supplier_rating["would_recommend"] / reviews,
-                    "show_recommenders": self.config.get("show_recommenders", False),
-                    "customer_ratings_title": self.get_translated_value("customer_ratings_title")
-                })
+                context.update(
+                    {
+                        "half_star": half_star,
+                        "full_stars": full_stars,
+                        "empty_stars": empty_stars,
+                        "reviews": reviews,
+                        "rating": rating,
+                        "would_recommend": supplier_rating["would_recommend"],
+                        "would_recommend_perc": supplier_rating["would_recommend"] / reviews,
+                        "show_recommenders": self.config.get("show_recommenders", False),
+                        "customer_ratings_title": self.get_translated_value("customer_ratings_title"),
+                    }
+                )
 
         return context
 
@@ -74,21 +85,26 @@ class VendorReviewCommentsPlugin(TemplatedPlugin):
     required_context_variables = ["supplier"]
 
     fields = [
-        ("title", TranslatableField(
-            label=_("Title"),
-            required=False,
-            initial=_("Reviews")
-        )),
-        ("no_reviews_text", TranslatableField(
-            label=_("No reviews text"),
-            required=False,
-            initial=_("The vendor has no reviews.")
-        )),
-        ("load_more_text", TranslatableField(
-            label=_("Load more reviews text"),
-            required=False,
-            initial=_("Load more comments")
-        )),
+        (
+            "title",
+            TranslatableField(label=_("Title"), required=False, initial=_("Reviews")),
+        ),
+        (
+            "no_reviews_text",
+            TranslatableField(
+                label=_("No reviews text"),
+                required=False,
+                initial=_("The vendor has no reviews."),
+            ),
+        ),
+        (
+            "load_more_text",
+            TranslatableField(
+                label=_("Load more reviews text"),
+                required=False,
+                initial=_("Load more comments"),
+            ),
+        ),
     ]
 
     def get_context_data(self, context):
@@ -97,9 +113,7 @@ class VendorReviewCommentsPlugin(TemplatedPlugin):
 
         if supplier and supplier.enabled:
             reviews = VendorReview.objects.approved().filter(
-                shop=context["request"].shop,
-                supplier=supplier,
-                comment__isnull=False
+                shop=context["request"].shop, supplier=supplier, comment__isnull=False
             )
             if reviews.exists():
                 context["review_supplier"] = supplier
@@ -114,6 +128,7 @@ class VendorReviewOptionSelectionConfigForm(GenericPluginForm):
     """
     A configuration form for the VendorReviewOption plugins
     """
+
     def populate(self):
         """
         A custom populate method to display product choices
@@ -130,9 +145,7 @@ class VendorReviewOptionSelectionConfigForm(GenericPluginForm):
             help_text=_("Select the option you want to show"),
             required=True,
             initial=self.plugin.config.get("vendor_review_option"),
-            extra_widget_attrs={
-                "data-search-mode": "main"
-            }
+            extra_widget_attrs={"data-search-mode": "main"},
         )
 
 
@@ -145,17 +158,23 @@ class VendorReviewOptionStarRatingsPlugin(TemplatedPlugin):
     editor_form_class = VendorReviewOptionSelectionConfigForm
 
     fields = [
-        ("customer_ratings_title", TranslatableField(
-            label=_("Customer ratings title"),
-            required=False,
-            initial=_("Customer Ratings:")
-        )),
-        ("show_recommenders", forms.BooleanField(
-            label=_("Show number of customers that recommend the vendor"),
-            required=False,
-            initial=False,
-            help_text=_("Whether to show number of customers that recommend the vendor.")
-        )),
+        (
+            "customer_ratings_title",
+            TranslatableField(
+                label=_("Customer ratings title"),
+                required=False,
+                initial=_("Customer Ratings:"),
+            ),
+        ),
+        (
+            "show_recommenders",
+            forms.BooleanField(
+                label=_("Show number of customers that recommend the vendor"),
+                required=False,
+                initial=False,
+                help_text=_("Whether to show number of customers that recommend the vendor."),
+            ),
+        ),
     ]
 
     def get_context_data(self, context):
@@ -164,6 +183,7 @@ class VendorReviewOptionStarRatingsPlugin(TemplatedPlugin):
         ratings = dict()
         option_id = self.config.get("vendor_review_option")
         context["vendor_review_option"] = option_id
+
         if supplier and supplier.enabled and option_id:
             option = VendorReviewOption.objects.get(pk=option_id)
             supplier_rating = get_reviews_aggregation_for_supplier_by_option(supplier, option)
@@ -171,17 +191,21 @@ class VendorReviewOptionStarRatingsPlugin(TemplatedPlugin):
                 rating = supplier_rating["rating"]
                 reviews = supplier_rating["reviews"]
                 (full_stars, empty_stars, half_star) = get_stars_from_rating(rating)
-                ratings.update({option: {
-                    "half_star": half_star,
-                    "full_stars": full_stars,
-                    "empty_stars": empty_stars,
-                    "reviews": reviews,
-                    "rating": rating,
-                    "would_recommend": supplier_rating["would_recommend"],
-                    "would_recommend_perc": supplier_rating["would_recommend"] / reviews,
-                    "show_recommenders": self.config.get("show_recommenders", False),
-                    "customer_ratings_title": self.get_translated_value("customer_ratings_title")
-                }})
+                ratings.update(
+                    {
+                        option: {
+                            "half_star": half_star,
+                            "full_stars": full_stars,
+                            "empty_stars": empty_stars,
+                            "reviews": reviews,
+                            "rating": rating,
+                            "would_recommend": supplier_rating["would_recommend"],
+                            "would_recommend_perc": supplier_rating["would_recommend"] / reviews,
+                            "show_recommenders": self.config.get("show_recommenders", False),
+                            "customer_ratings_title": self.get_translated_value("customer_ratings_title"),
+                        }
+                    }
+                )
             context.update({"ratings": ratings})
         return context
 
@@ -194,21 +218,26 @@ class VendorReviewOptionCommentsPlugin(TemplatedPlugin):
     editor_form_class = VendorReviewOptionSelectionConfigForm
 
     fields = [
-        ("title", TranslatableField(
-            label=_("Title"),
-            required=False,
-            initial=_("Reviews")
-        )),
-        ("no_reviews_text", TranslatableField(
-            label=_("No reviews text"),
-            required=False,
-            initial=_("The vendor has no reviews.")
-        )),
-        ("load_more_text", TranslatableField(
-            label=_("Load more reviews text"),
-            required=False,
-            initial=_("Load more comments")
-        )),
+        (
+            "title",
+            TranslatableField(label=_("Title"), required=False, initial=_("Reviews")),
+        ),
+        (
+            "no_reviews_text",
+            TranslatableField(
+                label=_("No reviews text"),
+                required=False,
+                initial=_("The vendor has no reviews."),
+            ),
+        ),
+        (
+            "load_more_text",
+            TranslatableField(
+                label=_("Load more reviews text"),
+                required=False,
+                initial=_("Load more comments"),
+            ),
+        ),
     ]
 
     def get_context_data(self, context):
@@ -221,7 +250,7 @@ class VendorReviewOptionCommentsPlugin(TemplatedPlugin):
                 shop=context["request"].shop,
                 supplier=supplier,
                 comment__isnull=False,
-                option_id=option_id
+                option_id=option_id,
             )
 
             if reviews.exists():
@@ -248,9 +277,7 @@ class VendorReviewOptionTabsSelectionConfigForm(GenericPluginForm):
             help_text=_("Select the options you want to show"),
             required=True,
             initial=self.plugin.config.get("vendor_review_options"),
-            extra_widget_attrs={
-                "data-search-mode": "main"
-            }
+            extra_widget_attrs={"data-search-mode": "main"},
         )
 
 
@@ -263,27 +290,35 @@ class VendorReviewOptionTabs(TemplatedPlugin):
     editor_form_class = VendorReviewOptionTabsSelectionConfigForm
 
     fields = [
-        ("main_title", TranslatableField(
-            label=_("Main title"),
-            required=False,
-            initial=_("Reviews")
-        )),
-        ("show_recommenders", forms.BooleanField(
-            label=_("Show number of customers that recommend the vendor"),
-            required=False,
-            initial=False,
-            help_text=_("Whether to show number of customers that recommend the vendor.")
-        )),
-        ("no_reviews_text", TranslatableField(
-            label=_("No reviews text"),
-            required=False,
-            initial=_("The vendor has no reviews.")
-        )),
-        ("load_more_text", TranslatableField(
-            label=_("Load more reviews text"),
-            required=False,
-            initial=_("Load more comments")
-        )),
+        (
+            "main_title",
+            TranslatableField(label=_("Main title"), required=False, initial=_("Reviews")),
+        ),
+        (
+            "show_recommenders",
+            forms.BooleanField(
+                label=_("Show number of customers that recommend the vendor"),
+                required=False,
+                initial=False,
+                help_text=_("Whether to show number of customers that recommend the vendor."),
+            ),
+        ),
+        (
+            "no_reviews_text",
+            TranslatableField(
+                label=_("No reviews text"),
+                required=False,
+                initial=_("The vendor has no reviews."),
+            ),
+        ),
+        (
+            "load_more_text",
+            TranslatableField(
+                label=_("Load more reviews text"),
+                required=False,
+                initial=_("Load more comments"),
+            ),
+        ),
     ]
 
     def get_context_data(self, context):
@@ -308,21 +343,103 @@ class VendorReviewOptionTabs(TemplatedPlugin):
                     rating_reviews = supplier_rating["reviews"]
                     (full_stars, empty_stars, half_star) = get_stars_from_rating(rating)
 
-                    ratings.update({option: {
-                        "half_star": half_star,
-                        "full_stars": full_stars,
-                        "empty_stars": empty_stars,
-                        "reviews": rating_reviews,
-                        "rating": rating,
-                        "would_recommend": supplier_rating["would_recommend"],
-                        "would_recommend_perc": supplier_rating["would_recommend"] / rating_reviews,
-                        "show_recommenders": self.config.get("show_recommenders", False),
-                        "option": option,
-                        "load_more_text": self.get_translated_value("load_more_text")
-                    }})
+                    ratings.update(
+                        {
+                            option: {
+                                "half_star": half_star,
+                                "full_stars": full_stars,
+                                "empty_stars": empty_stars,
+                                "reviews": rating_reviews,
+                                "rating": rating,
+                                "would_recommend": supplier_rating["would_recommend"],
+                                "would_recommend_perc": supplier_rating["would_recommend"] / rating_reviews,
+                                "show_recommenders": self.config.get("show_recommenders", False),
+                                "option": option,
+                                "load_more_text": self.get_translated_value("load_more_text"),
+                            }
+                        }
+                    )
 
             context["no_reviews_text"] = self.get_translated_value("no_reviews_text")
             context["main_title"] = self.get_translated_value("main_title")
             context["options"] = options
             context.update({"ratings": ratings})
+        return context
+
+
+VENDOR_OPTIONS_RATINGS_CACHE_ITEM_FMT = "vendor_options_ratings-{shop_id}"
+
+
+def get_vendor_options_ratings_cache_item(shop):
+    shop_id = shop.id if hasattr(shop, "pk") else shop
+    return VENDOR_OPTIONS_RATINGS_CACHE_ITEM_FMT.format(shop_id=shop_id)
+
+
+class AverageOptionsRatingsPlugin(TemplatedPlugin):
+    identifier = "averaged_options_ratings"
+    name = _("Average Options Ratings")
+    template_name = "shuup_vendor_reviews/plugins/vendor_average_options_ratings.jinja"
+    required_context_variables = ["supplier"]
+
+    fields = [
+        (
+            "customer_ratings_title",
+            TranslatableField(
+                label=_("Customer ratings title"),
+                required=False,
+                initial=_("Customer Ratings:"),
+            ),
+        ),
+        (
+            "show_recommenders",
+            forms.BooleanField(
+                label=_("Show number of customers that recommend the vendor"),
+                required=False,
+                initial=False,
+                help_text=_("Whether to show number of customers that recommend the vendor."),
+            ),
+        ),
+    ]
+
+    def get_context_data(self, context):
+        context = dict(context)
+        supplier = context["supplier"]
+        request = context["request"]
+        if supplier and supplier.enabled:
+            supplier_rating = get_reviews_aggregation_for_supplier(supplier)
+
+            if supplier_rating["reviews"]:
+                reviews = supplier_rating["reviews"]
+
+                key, options_ratings = context_cache.get_cached_value(
+                    identifier="vendor_options_ratings_%s" % (supplier.pk if supplier else ""),
+                    item=get_vendor_options_ratings_cache_item(request.shop),
+                    context=request,
+                )
+
+                if not options_ratings:
+                    options_ratings = supplier.supplier_reviews.options_ratings()
+                    context_cache.set_cached_value(
+                        key,
+                        options_ratings,
+                        settings.SHUUP_TEMPLATE_HELPERS_CACHE_DURATION,
+                    )
+
+                for option_rating in options_ratings:
+                    frac, whole = math.modf(option_rating["average"])
+                    option_rating["full_stars"] = int(whole)
+                    option_rating["half_stars"] = int(math.ceil(frac))
+                    option_rating["empty_stars"] = 5 - option_rating["full_stars"] - option_rating["half_stars"]
+
+                context.update(
+                    {
+                        "reviews": reviews,
+                        "options_ratings": options_ratings,
+                        "would_recommend": supplier_rating["would_recommend"],
+                        "would_recommend_perc": supplier_rating["would_recommend"] / reviews,
+                        "show_recommenders": self.config.get("show_recommenders", False),
+                        "customer_ratings_title": self.get_translated_value("customer_ratings_title"),
+                    }
+                )
+
         return context
